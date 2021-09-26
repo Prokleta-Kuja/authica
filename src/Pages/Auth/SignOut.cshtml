@@ -1,0 +1,14 @@
+@page "/sign-out/{**Slug}"
+@model authica.Pages.Auth.SignOutModel
+@{
+    Layout = "_Layout";
+}
+
+<div class="d-flex align-items-center justify-content-center min-vh-100">
+    <div class="card m-1">
+        <div class="card-body text-center">
+            <h2> You have been signed out. </h2>
+            <a href="/sign-in" class="card-link">Sign in again</a>
+        </div>
+    </div>
+</div>

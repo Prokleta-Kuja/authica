@@ -1,0 +1,28 @@
+﻿@using System.Reflection
+
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+    <div class="container-xxl">
+        @* <a class="navbar-brand" href="@C.Routes.Root">@_t.App</a> *@
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse d-md-flex justify-content-between" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                @* <li class="nav-item">
+                    <a class="nav-link" href="@C.Routes.Invoices">@_t.Invoices</a>
+                </li> *@
+            </ul>
+            <div class="text-muted">@Version</div>
+        </div>
+    </div>
+</nav>
+
+@code{
+    private string? Version;
+    // private readonly INavigation _t = LocalizationFactory.Navigation();
+    protected override void OnInitialized()
+    {
+        Version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+    }
+}

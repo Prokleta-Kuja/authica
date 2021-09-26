@@ -1,0 +1,70 @@
+@page "/sign-in"
+@model authica.Pages.Auth.SignInModel
+@{
+    Layout = "_Layout";
+}
+
+<div class="d-flex align-items-center justify-content-center min-vh-100">
+    <div class="card m-1">
+        <div class="card-header">
+            <h2 class="text-center mb-0">Sign in</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username or email</label>
+                            <input type="text"
+                                class="form-control @(Model.Errors.ContainsKey("Username") ? "is-invalid" : string.Empty)"
+                                id="username" name="Username">
+                            @if (Model.Errors.ContainsKey("Username"))
+                            {
+                                <div class="invalid-feedback">
+                                    @Model.Errors["Username"]
+                                </div>
+                            }
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password"
+                                class="form-control @(Model.Errors.ContainsKey("Password") ? "is-invalid" : string.Empty)"
+                                id="password" name="Password">
+                            @if (Model.Errors.ContainsKey("Password"))
+                            {
+                                <div class="invalid-feedback">
+                                    @Model.Errors["Password"]
+                                </div>
+                            }
+                        </div>
+                        @if (Model.Errors.ContainsKey(string.Empty))
+                        {
+                            <div class="mb-3 text-danger">
+                                @Model.Errors[string.Empty]
+                            </div>
+                        }
+                        <div class="d-flex justify-content-between">
+                            <a href="/reset-password" class="card-link">Forgot password?</a>
+                            <button class="btn btn-primary" type="submit">Sign in</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col">
+                    <h5 class="card-title text-center">External</h5>
+                    <button class="btn btn-outline-secondary w-100 mb-3">
+                        <i class="bi bi-github">&nbsp;</i>
+                        <span>GitHub</span>
+                    </button>
+                    <button class="btn btn-outline-secondary w-100 mb-3">
+                        <i class="bi bi-google">&nbsp;</i>
+                        <span>Google</span>
+                    </button>
+                    <button class="btn btn-outline-secondary w-100 mb-3">
+                        <i class="bi bi-facebook">&nbsp;</i>
+                        <span>Facebook</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
