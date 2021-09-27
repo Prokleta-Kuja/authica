@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using authica.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +13,7 @@ namespace authica
 {
     public static class CookieAuth
     {
+        public const string Scheme = CookieAuthenticationDefaults.AuthenticationScheme;
         public static Action<CookieAuthenticationOptions> Configure = o =>
         {
             o.Cookie.Name = $".{C.Configuration.Current.Name}";
@@ -26,6 +31,47 @@ namespace authica
             o.AccessDeniedPath = C.Routes.Forbidden;
             o.ExpireTimeSpan = C.Configuration.Current.MaxSessionDuration;
         };
+        public static AuthenticationProperties CreateAuthProps() =>
+            new AuthenticationProperties
+            {
+                AllowRefresh = true,
+                IssuedUtc = DateTime.UtcNow,
+            };
+        public static ClaimsPrincipal CreatePrincipal(User user) => new ClaimsPrincipal(CreateIdentity(user));
+        public static ClaimsIdentity CreateIdentity(User user)
+        {
+            var claims = new List<Claim>
+                {
+                    new(C.Claims.Subject, user.AliasId.ToString()),
+                    new(C.Claims.UserName, user.UserName),
+                    new(C.Claims.Email, user.Email),
+                    new(C.Claims.EmailVerified, user.EmailVerified.ToString(), ClaimValueTypes.Boolean),
+                };
+
+            var hasFirstName = !string.IsNullOrWhiteSpace(user.FirstName);
+            var hasLastName = !string.IsNullOrWhiteSpace(user.LastName);
+
+            if (hasFirstName)
+                claims.Add(new(C.Claims.FirstName, user.FirstName!));
+
+            if (hasLastName)
+                claims.Add(new(C.Claims.LastName, user.LastName!));
+
+            if (hasFirstName && hasLastName)
+                claims.Add(new(C.Claims.DisplayName, $"{user.FirstName} {user.LastName}"));
+
+            if (!string.IsNullOrWhiteSpace(user.TimeZone))
+                claims.Add(new(C.Claims.TimeZone, user.TimeZone));
+
+            if (!string.IsNullOrWhiteSpace(user.Locale))
+                claims.Add(new(C.Claims.Locale, user.Locale));
+
+            if (user.UserRoles!.Any())
+                claims.AddRange(user.UserRoles!.Select(ur => new Claim(ClaimTypes.Role, ur.Role!.Name)));
+
+            var identity = new ClaimsIdentity(claims, "Basic");
+            return identity;
+        }
         public class MemoryCacheTicketStore : ITicketStore
         {
             private const string KeyPrefix = "AuthSessionStore-";

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text.Json;
 
 namespace authica
@@ -18,6 +19,7 @@ namespace authica
             public const string Root = "/";
             public const string SignIn = "/sign-in";
             public const string SignOut = "/sign-out";
+            public const string ResetPassword = "/reset-password";
             public const string Forbidden = "/forbidden";
         }
         public static class Paths
@@ -29,7 +31,11 @@ namespace authica
         public static class Configuration
         {
             static FileInfo file = new(Paths.AppDataFor("configuration.json"));
-            static JsonSerializerOptions serializerOptions = new() { WriteIndented = true };
+            static JsonSerializerOptions serializerOptions = new()
+            {
+                WriteIndented = true,
+                IgnoreReadOnlyProperties = true,
+            };
             public static Settings Current { get; private set; } = new();
             public static void Load()
             {
@@ -38,9 +44,11 @@ namespace authica
                 {
                     contents = File.ReadAllText(file.FullName);
                     Current = JsonSerializer.Deserialize<Settings>(contents) ?? throw new JsonException("Could not load configuration file");
+                    Current.LoadKeys();
                 }
                 else
                 {
+                    Current.LoadKeys();
                     contents = JsonSerializer.Serialize(Current, serializerOptions);
                     File.WriteAllText(file.FullName, contents);
                 }
@@ -132,6 +140,11 @@ namespace authica
     }
     public class Settings
     {
+        private RSA _rsa;
+        public Settings()
+        {
+            _rsa = RSA.Create();
+        }
         public string Name { get; set; } = "authica";
         public string Domain { get; set; } = ".localhost";
         public string? MaxMindLicenseKey { get; set; }
@@ -140,5 +153,19 @@ namespace authica
         public TimeSpan InfractionExpiration { get; set; } = TimeSpan.FromMinutes(15);
         public TimeSpan BanTime { get; set; } = TimeSpan.FromHours(12);
         public TimeSpan MaxSessionDuration { get; set; } = TimeSpan.FromHours(2);
+
+        public string? Key { get; set; }
+        public RSA SecurityKey => _rsa;
+        public void LoadKeys()
+        {
+            if (string.IsNullOrWhiteSpace(Key))
+            {
+                Key = Convert.ToBase64String(_rsa.ExportRSAPrivateKey());
+            }
+            else
+            {
+                _rsa.ImportRSAPrivateKey(Convert.FromBase64String(Key), out var _);
+            }
+        }
     }
 }

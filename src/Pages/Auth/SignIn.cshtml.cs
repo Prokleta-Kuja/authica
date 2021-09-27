@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using authica.Entities;
 using authica.Services;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -66,16 +64,11 @@ namespace authica.Pages.Auth
                 user.LastLogin = DateTime.UtcNow;
                 await _db.SaveChangesAsync();
 
-                var identity = CreateIdentity(user);
+                var principal = CookieAuth.CreatePrincipal(user);
+                var props = CookieAuth.CreateAuthProps();
 
-                var props = new AuthenticationProperties
-                {
-                    AllowRefresh = true,
-                    IssuedUtc = DateTime.UtcNow,
-                    RedirectUri = redirectUri,
-                };
-
-                return SignIn(new ClaimsPrincipal(identity), props, CookieAuthenticationDefaults.AuthenticationScheme);
+                await HttpContext.SignInAsync(CookieAuth.Scheme, principal, props);
+                return Redirect(redirectUri);
             }
             else
             {
@@ -84,39 +77,6 @@ namespace authica.Pages.Auth
                 return Page();
             }
         }
-        ClaimsIdentity CreateIdentity(User user)
-        {
-            var claims = new List<Claim>
-                {
-                    new(C.Claims.Subject, user.AliasId.ToString()),
-                    new(C.Claims.UserName, user.UserName),
-                    new(C.Claims.Email, user.Email),
-                    new(C.Claims.EmailVerified, user.EmailVerified.ToString(), ClaimValueTypes.Boolean),
-                };
 
-            var hasFirstName = !string.IsNullOrWhiteSpace(user.FirstName);
-            var hasLastName = !string.IsNullOrWhiteSpace(user.LastName);
-
-            if (hasFirstName)
-                claims.Add(new(C.Claims.FirstName, user.FirstName!));
-
-            if (hasLastName)
-                claims.Add(new(C.Claims.LastName, user.LastName!));
-
-            if (hasFirstName && hasLastName)
-                claims.Add(new(C.Claims.DisplayName, $"{user.FirstName} {user.LastName}"));
-
-            if (!string.IsNullOrWhiteSpace(user.TimeZone))
-                claims.Add(new(C.Claims.TimeZone, user.TimeZone));
-
-            if (!string.IsNullOrWhiteSpace(user.Locale))
-                claims.Add(new(C.Claims.Locale, user.Locale));
-
-            if (user.UserRoles!.Any())
-                claims.AddRange(user.UserRoles!.Select(ur => new Claim(ClaimTypes.Role, ur.Role!.Name)));
-
-            var identity = new ClaimsIdentity(claims, "Basic");
-            return identity;
-        }
     }
 }
