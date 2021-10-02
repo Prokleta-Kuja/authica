@@ -6,6 +6,7 @@ using authica.Entities;
 using authica.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -18,10 +19,12 @@ namespace authica.Pages.Auth
     {
         readonly AppDbContext _db;
         readonly IPasswordHasher _hasher;
-        public SignInModel(AppDbContext db, IPasswordHasher hasher)
+        readonly IpSecurity _ipsec;
+        public SignInModel(AppDbContext db, IPasswordHasher hasher, IpSecurity ipsec)
         {
             _db = db;
             _hasher = hasher;
+            _ipsec = ipsec;
         }
         public IActionResult OnGet() => Page();
         [FromForm] public string? Username { get; set; }
@@ -50,8 +53,10 @@ namespace authica.Pages.Auth
 
             if (user == null || user.Disabled.HasValue)
             {
+                if (_ipsec.LogSignIn())
+                    return StatusCode(StatusCodes.Status418ImATeapot, "Your IP address has been blocked.");
+
                 Errors.TryAdd(string.Empty, "Invalid username/email and/or password");
-                //TODO: log error and ip
                 return Page();
             }
 
@@ -72,8 +77,10 @@ namespace authica.Pages.Auth
             }
             else
             {
-                ModelState.AddModelError(nameof(Username), "Invalid username/email and/or password");
-                //TODO: log error and ip
+                if (_ipsec.LogSignIn())
+                    return StatusCode(StatusCodes.Status418ImATeapot, "Your IP address has been blocked.");
+
+                Errors.TryAdd(string.Empty, "Invalid username/email and/or password");
                 return Page();
             }
         }

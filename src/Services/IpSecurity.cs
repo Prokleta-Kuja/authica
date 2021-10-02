@@ -6,67 +6,101 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using MaxMind.GeoIP2;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
 namespace authica.Services
 {
+    public static class IpSecurityExtensions
+    {
+        public static void UseIpSecurity(this IApplicationBuilder app) => app.UseMiddleware<IpSecurityMiddleware>();
+    }
+    public class IpSecurityMiddleware
+    {
+        private readonly RequestDelegate _next;
+
+        public IpSecurityMiddleware(RequestDelegate next)
+        {
+            _next = next;
+        }
+        public async Task Invoke(HttpContext httpContext, IpSecurity ipsec)
+        {
+            if (ipsec.IsAllowed())
+                await _next(httpContext);
+            else
+            {
+                httpContext.Response.StatusCode = StatusCodes.Status418ImATeapot;
+                await httpContext.Response.WriteAsync("Your IP address has been blocked.");
+            }
+        }
+    }
     public class IpSecurity
     {
         readonly FileInfo _dbFile;
         readonly ILogger<IpSecurity> _logger;
         readonly IHttpClientFactory _httpClientFactory;
         readonly IMemoryCache _cache;
-        public IpSecurity(ILogger<IpSecurity> logger, IHttpClientFactory httpClientFactory, IMemoryCache memoryCache)
+        readonly string ipAddress;
+        public IpSecurity(ILogger<IpSecurity> logger,
+                          IHttpClientFactory httpClientFactory,
+                          IMemoryCache memoryCache,
+                          IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
             _cache = memoryCache;
             _dbFile = new(C.Paths.AppDataFor("GeoLite2-Country.mmdb"));
+            ipAddress = httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
         }
-        string GetBanKey(string ipAddress) => $"Banned_{ipAddress}";
-        string GetTryKey(string ipAddress) => $"Try_{ipAddress}";
-        public bool IsAllowed(string ipAddress)
+        string BanKey => $"Banned_{ipAddress}";
+        string SignInKey => $"SignIn_{ipAddress}";
+        string ResetPasswordKey => $"Reset_{ipAddress}";
+        bool LogInfraction(string key)
         {
-            if (_cache.TryGetValue(GetBanKey(ipAddress), out bool exists))
-                return false;
-
-            // Perform country check only if configured
-            if (C.Configuration.Current.AllowedCountryCodes.Any())
-            {
-                if (!_dbFile.Exists)
-                    return true;
-
-                using var reader = new DatabaseReader(_dbFile.FullName);
-                if (reader.TryCountry(ipAddress, out var response))
-                    return C.Configuration.Current.AllowedCountryCodes.Contains(response?.Country?.IsoCode ?? string.Empty);
-            }
-
-            return false;
-        }
-        public void LogInfraction(string ipAddress)
-        {
-            var key = GetTryKey(ipAddress);
-            var prevInfractions = _cache.GetOrCreate(key, entry =>
-            {
-                entry.SlidingExpiration = C.Configuration.Current.InfractionExpiration;
-                return default(int);
-            });
+            _cache.TryGetValue<int>(key, out var prevInfractions);
 
             var newInfractions = prevInfractions + 1;
             if (newInfractions >= C.Configuration.Current.MaxInfractions)
             {
                 _cache.Remove(key);
-                var entry = _cache.CreateEntry(GetBanKey(ipAddress));
-                entry.SetValue(true);
-                entry.SetAbsoluteExpiration(C.Configuration.Current.BanTime);
+                Ban();
+                return true;
             }
-            else
-                _cache.Set<int>(key, newInfractions);
+
+            _cache.Set<int>(key, newInfractions, C.Configuration.Current.InfractionExpiration);
+            return false;
         }
-        public void ConfigurationChanged()
+        public void Ban() => _cache.Set<bool>(BanKey, true, C.Configuration.Current.BanTime);
+        public void UnBan() => _cache.Remove(BanKey);
+        public bool LogSignIn() => LogInfraction(SignInKey);
+        public bool LogResetPassword() => LogInfraction(ResetPasswordKey);
+        public bool IsAllowed()
         {
-            // TODO: clear all keys after configuration has changed
+            if (_cache.TryGetValue(BanKey, out bool exists))
+                return false;
+
+            // Perform country check only if configured
+            if (C.Configuration.Current.AllowedCountryCodes.Any())
+            {
+                // Do not download db on signin/reset request
+                if (!_dbFile.Exists)
+                    return true;
+
+                using var reader = new DatabaseReader(_dbFile.FullName);
+                if (reader.TryCountry(ipAddress, out var response))
+                {
+                    var allowed = C.Configuration.Current.AllowedCountryCodes.Contains(response?.Country?.IsoCode ?? string.Empty);
+                    if (!allowed)
+                    {
+                        Ban(); // To speed up further lookups
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
         public async ValueTask DownloadDb()
         {

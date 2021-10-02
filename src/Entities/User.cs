@@ -38,7 +38,6 @@ namespace authica.Entities
         public string? TimeZone { get; set; }
         public string? Locale { get; set; }
         public string? PasswordHash { get; set; }
-        public Guid? ResetToken { get; set; }
         public bool IsAdmin { get; set; }
         public DateTime Created { get; set; }
         public DateTime? Disabled { get; set; }

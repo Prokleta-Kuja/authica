@@ -54,6 +54,9 @@ namespace authica
 
             services.AddDataProtection().PersistKeysToDbContext<AppDbContext>();
             services.AddSingleton<IPasswordHasher, PasswordHashingService>();
+            services.AddHttpClient();
+            services.AddHttpContextAccessor();
+            services.AddScoped<IpSecurity>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,6 +71,8 @@ namespace authica
                 app.UseExceptionHandler("/Error");
                 app.UseForwardedHeaders();
             }
+
+            app.UseIpSecurity();
 
             app.UseStaticFiles();
 

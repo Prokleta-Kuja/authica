@@ -5,9 +5,11 @@ using authica.Entities;
 using authica.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace authica.Pages.Auth
 {
@@ -17,21 +19,26 @@ namespace authica.Pages.Auth
     {
         readonly AppDbContext _db;
         readonly IPasswordHasher _hasher;
-        public ResetPasswordModel(AppDbContext db, IPasswordHasher hasher)
+        readonly IMemoryCache _cache;
+        readonly IpSecurity _ipsec;
+        public ResetPasswordModel(AppDbContext db, IPasswordHasher hasher, IMemoryCache cache, IpSecurity ipsec)
         {
             _db = db;
             _hasher = hasher;
+            _cache = cache;
+            _ipsec = ipsec;
         }
         public bool EmailSent { get; set; }
         [FromRoute] public Guid? Token { get; set; }
         [FromForm] public string? Email { get; set; }
         [FromForm] public string? Password { get; set; }
         public Dictionary<string, string> Errors = new();
+        string GetKey(Guid guid) => $"Reset_{guid}";
         public async Task<IActionResult> OnGet()
         {
-            if (Token.HasValue)
+            if (Token.HasValue && _cache.TryGetValue<int>(GetKey(Token.Value), out var userId))
             {
-                var user = await _db.Users.SingleOrDefaultAsync(u => u.ResetToken == Token);
+                var user = await _db.Users.SingleOrDefaultAsync(u => u.UserId == userId);
                 if (user == null || user.Disabled.HasValue)
                     return Redirect(C.Routes.ResetPassword);
 
@@ -51,10 +58,16 @@ namespace authica.Pages.Auth
                 var user = await _db.Users.SingleOrDefaultAsync(u => u.Email == email);
                 if (user != null && !user.Disabled.HasValue)
                 {
-                    user.ResetToken = Guid.NewGuid();
-                    await _db.SaveChangesAsync();
+                    var token = Guid.NewGuid();
+                    var key = GetKey(token);
+                    _cache.Set(key, user.UserId, TimeSpan.FromMinutes(15));
+
+                    // Count reset attempt as infraction to prevent sending a ton of email
+                    if (_ipsec.LogResetPassword())
+                        return StatusCode(StatusCodes.Status418ImATeapot, "Your IP address has been blocked.");
+
                     // TODO: send token via email
-                    System.Diagnostics.Debug.WriteLine($"Reset link {C.Routes.ResetPassword}/{user.ResetToken}");
+                    System.Diagnostics.Debug.WriteLine($"Reset link {C.Routes.ResetPassword}/{token} for user {user.UserName}");
                 }
             }
 
@@ -62,22 +75,25 @@ namespace authica.Pages.Auth
         }
         public async Task<IActionResult> OnPost()
         {
-            if (string.IsNullOrWhiteSpace(Password))
+            if (string.IsNullOrWhiteSpace(Password)
+                || !Token.HasValue
+                || !_cache.TryGetValue<int>(GetKey(Token.Value), out var userId))
                 return Page();
 
             var user = await _db.Users
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
-                .SingleOrDefaultAsync(u => u.ResetToken == Token);
+                .SingleOrDefaultAsync(u => u.UserId == userId);
 
             if (user == null || user.Disabled.HasValue)
                 return Redirect(C.Routes.ResetPassword);
 
             user.SetPassword(Password, _hasher);
             user.EmailVerified = true;
-            user.ResetToken = null;
             user.LastLogin = DateTime.UtcNow;
             await _db.SaveChangesAsync();
+
+            _cache.Remove(GetKey(Token.Value));
 
             var principal = CookieAuth.CreatePrincipal(user);
             var props = CookieAuth.CreateAuthProps();
