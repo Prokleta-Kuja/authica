@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace authica.Entities
 {
@@ -25,5 +26,7 @@ namespace authica.Entities
         public bool AllowAllUsers { get; set; }
         public DateTime Created { get; set; }
         public DateTime? Disabled { get; set; }
+
+        public ICollection<AppRole>? AppRoles { get; set; }
     }
 }

@@ -1,0 +1,40 @@
+@attribute [Microsoft.AspNetCore.Components.RouteAttribute(C.Routes.Roles)]
+
+<h1>@_t.ListTitle</h1>
+
+<div class="table-responsive">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th>@_t.TableId</th>
+                <th>@_t.TableName</th>
+                <th>@_t.TableDisabled</th>
+                <th class="text-end">
+                    <a class="btn btn-sm btn-outline-primary" href=@C.Routes.RolesFor(Guid.Empty)>@_t.Add</a>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _roles)
+            {
+                <tr @key=item.RoleId>
+                    <td class="user-select-all">@item.AliasId</td>
+                    <td class="user-select-all">@item.Name</td>
+                    <td class="user-select-all">
+                        @if (item.Disabled.HasValue)
+                        {
+                            <span>@_f.Display(item.Disabled, true)</span>
+                        }
+                        else
+                        {
+                            <span>@_t.RowDisabled</span>
+                        }
+                    </td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" href=@C.Routes.RolesFor(item.AliasId)>@_t.Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

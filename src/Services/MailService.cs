@@ -60,7 +60,7 @@ namespace authica.Services
         }
         public async Task SendPasswordResetAsync(User user, Guid token, CancellationToken cancellationToken = default)
         {
-            var resetLink = $"{C.Configuration.Current.HostName}/{C.Routes.ResetPassword}/{token}";
+            var resetLink = $"{C.Configuration.Current.HostName}{C.Routes.ResetPassword}/{token}";
             var from = new MailAddress(C.Configuration.Current.SmtpFromAddress, C.Configuration.Current.SmtpFromName);
             var to = new MailAddress(user.Email, $"{user.FirstName} {user.LastName}");
             // TODO: localize

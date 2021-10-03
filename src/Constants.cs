@@ -27,6 +27,9 @@ namespace authica
             public const string Users = "/users";
             public const string User = "/users/{AliasId:guid}";
             public static string UsersFor(Guid aliasId) => $"{Users}/{aliasId}";
+            public const string Roles = "/roles";
+            public const string Role = "/roles/{AliasId:guid}";
+            public static string RolesFor(Guid aliasId) => $"{Roles}/{aliasId}";
         }
         public static class Paths
         {

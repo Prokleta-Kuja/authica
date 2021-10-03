@@ -1,0 +1,50 @@
+@attribute [Microsoft.AspNetCore.Components.RouteAttribute(C.Routes.Role)]
+@using Models
+
+<div class="row">
+    @if (_create != null)
+    {
+        <div class="col"></div>
+        <div class="col">
+        <legend>@_t.AddTitle</legend>
+        <form @onsubmit=SaveCreateClicked>
+            <TextBox For=@nameof(RoleCreateModel.Name) Label=@_t.Name @bind-Value=_create.Name Errors=_errors Required
+                AutoFocus />
+            <Switch For=@nameof(RoleCreateModel.Disabled) Label=@_t.Disabled @bind-Value=_create.Disabled
+                Errors=_errors />
+
+            <div class="float-end">
+                <button type="submit" class="btn btn-primary">@_t.Save</button>
+                <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
+            </div>
+        </form>
+    </div>
+        <div class="col"></div>
+    }
+    else if (_edit != null)
+    {
+        <div class="col">
+            <legend>@_t.EditTitle @_edit.Name</legend>
+            <form @onsubmit=SaveEditClicked>
+                <TextBox For=@nameof(RoleEditModel.Name) Label=@_t.Name @bind-Value=_edit.Name Errors=_errors Required
+                AutoFocus />
+                <Switch For=@nameof(RoleEditModel.Disabled) Label=@_t.Disabled @bind-Value=_edit.Disabled Errors=_errors />
+
+                <div class="float-end">
+                    <button type="submit" class="btn btn-primary">@_t.SaveChanges</button>
+                    <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
+                </div>
+            </form>
+        </div>
+        <div class="col">
+            Apps
+        </div>
+        <div class="col">
+            Users
+        </div>
+    }
+    else
+    {
+        <text>@_t.NotFound</text>
+    }
+</div>

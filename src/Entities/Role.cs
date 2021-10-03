@@ -12,6 +12,7 @@ namespace authica.Entities
         internal Role(string name)
         {
             Name = name;
+            AliasId = Guid.NewGuid();
         }
         public int RoleId { get; set; }
         public Guid AliasId { get; set; }
@@ -19,5 +20,6 @@ namespace authica.Entities
         public DateTime? Disabled { get; set; }
 
         public ICollection<UserRole>? UserRoles { get; set; }
+        public ICollection<AppRole>? AppRoles { get; set; }
     }
 }

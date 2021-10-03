@@ -18,7 +18,7 @@ namespace authica.Entities
             var index = email.IndexOf('@');
             var emailValid = index > 0 && index != email.Length - 1 && index == email.LastIndexOf('@');
             if (!emailValid)
-                throw new ArgumentException(nameof(email));
+                throw new ArgumentException("Invalid", nameof(email));
 
             AliasId = Guid.NewGuid();
             Email = email.ToLowerInvariant();

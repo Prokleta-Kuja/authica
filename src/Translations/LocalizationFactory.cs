@@ -64,6 +64,14 @@ namespace authica.Translations
 
             return new Users_en();
         }
+        public static IRoles Roles() => Roles(C.Env.Locale);
+        public static IRoles Roles(string locale)
+        {
+            if (locale.StartsWith("hr"))
+                return new Roles_hr();
+
+            return new Roles_en();
+        }
 
         // Services
         public static IIpSecurity IpSecurity() => IpSecurity(C.Env.Locale);

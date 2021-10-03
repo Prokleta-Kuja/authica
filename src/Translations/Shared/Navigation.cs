@@ -3,22 +3,25 @@ namespace authica.Translations
     public interface INavigation : IStandard
     {
         string App { get; }
-        string Import { get; }
-        string People { get; }
-        string Locations { get; }
+        string Roles { get; }
+        string Users { get; }
+        string Apps { get; }
+        string SignOut { get; }
     }
     public class Navigation_en : Standard_en, INavigation
     {
-        public string App => "albumica";
-        public string Import => "Import";
-        public string People => "People";
-        public string Locations => "Locations";
+        public string App => "authica";
+        public string Roles => "Roles";
+        public string Users => "Users";
+        public string Apps => "Apps";
+        public string SignOut => "Sign out";
     }
     public class Navigation_hr : Standard_hr, INavigation
     {
-        public string App => "albumica";
-        public string Import => "Uvoz";
-        public string People => "Ljudi";
-        public string Locations => "Lokacije";
+        public string App => "authica";
+        public string Roles => "Uloge";
+        public string Users => "Users";
+        public string Apps => "Appovi";
+        public string SignOut => "Odjava";
     }
 }

@@ -16,6 +16,7 @@ namespace authica.Entities
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<UserRole> UserRoles { get; set; } = null!;
         public DbSet<Role> Roles { get; set; } = null!;
+        public DbSet<AppRole> AppRoles { get; set; } = null!;
         public DbSet<App> Apps { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -37,6 +38,12 @@ namespace authica.Entities
             {
                 e.HasKey(p => p.RoleId);
                 e.HasMany(p => p.UserRoles).WithOne(p => p.Role!).OnDelete(DeleteBehavior.Cascade);
+                e.HasMany(p => p.AppRoles).WithOne(p => p.Role!).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<AppRole>(e =>
+            {
+                e.HasKey(p => new { p.AppId, p.RoleId });
             });
 
             builder.Entity<App>(e =>
