@@ -1,0 +1,42 @@
+@attribute [Microsoft.AspNetCore.Components.RouteAttribute(C.Routes.Apps)]
+
+<h1>@_t.ListTitle</h1>
+
+<div class="table-responsive">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th>@_t.TableId</th>
+                <th>@_t.TableName</th>
+                <th>@_t.TableCreated</th>
+                <th>@_t.TableDisabled</th>
+                <th class="text-end">
+                    <a class="btn btn-sm btn-outline-primary" href=@C.Routes.AppsFor(Guid.Empty)>@_t.Add</a>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _apps)
+            {
+                <tr @key=item.AppId>
+                    <td class="user-select-all">@item.AliasId</td>
+                    <td class="user-select-all">@item.Name</td>
+                    <td class="user-select-all">@_f.Display(item.Created, true)</td>
+                    <td class="user-select-all">
+                        @if (item.Disabled.HasValue)
+                        {
+                            <span>@_f.Display(item.Disabled, true)</span>
+                        }
+                        else
+                        {
+                            <span>@_t.RowDisabled</span>
+                        }
+                    </td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" href=@C.Routes.AppsFor(item.AliasId)>@_t.Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

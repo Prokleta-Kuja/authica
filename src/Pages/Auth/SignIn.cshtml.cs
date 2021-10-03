@@ -29,6 +29,7 @@ namespace authica.Pages.Auth
             _ipsec = ipsec;
         }
         public IActionResult OnGet() => Page();
+        [FromQuery] public string? ReturnUrl { get; set; }
         [FromForm] public string? Username { get; set; }
         [FromForm] public string? Password { get; set; }
         public Dictionary<string, string> Errors = new();
@@ -62,7 +63,7 @@ namespace authica.Pages.Auth
                 return Page();
             }
 
-            var redirectUri = C.Routes.Root;
+            var redirectUri = string.IsNullOrWhiteSpace(ReturnUrl) ? C.Routes.Root : ReturnUrl;
             // TODO: Validate app and change redirectUri
 
             var authenticated = user.VerifyPassword(password, _hasher);

@@ -21,7 +21,8 @@ namespace authica.Entities
         public Guid AliasId { get; set; }
         public string Name { get; set; }
         public string RedirectUri { get; set; }
-        public string? PasswordHash { get; set; }
+        public string? SecretHash { get; set; }
+        public bool AllowAllUsers { get; set; }
         public DateTime Created { get; set; }
         public DateTime? Disabled { get; set; }
     }
