@@ -1,3 +1,4 @@
+using authica.Translations;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +11,7 @@ namespace authica.Pages.Auth
     [IgnoreAntiforgeryToken]
     public class SignOutModel : PageModel
     {
+        public readonly ISignOut T = LocalizationFactory.SignOut();
         [FromRoute] public string? Slug { get; set; }
         public IActionResult OnGet()
         {

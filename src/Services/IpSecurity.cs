@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using authica.Translations;
 using MaxMind.GeoIP2;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -19,7 +20,8 @@ namespace authica.Services
     }
     public class IpSecurityMiddleware
     {
-        private readonly RequestDelegate _next;
+        readonly RequestDelegate _next;
+        readonly IIpSecurity _t = LocalizationFactory.IpSecurity();
 
         public IpSecurityMiddleware(RequestDelegate next)
         {
@@ -32,7 +34,7 @@ namespace authica.Services
             else
             {
                 httpContext.Response.StatusCode = StatusCodes.Status418ImATeapot;
-                await httpContext.Response.WriteAsync("Your IP address has been blocked.");
+                await httpContext.Response.WriteAsync(_t.IpBlocked);
             }
         }
     }

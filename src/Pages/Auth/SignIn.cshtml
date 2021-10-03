@@ -7,33 +7,33 @@
 <div class="d-flex align-items-center justify-content-center min-vh-100">
     <div class="card m-1">
         <div class="card-header">
-            <h2 class="text-center mb-0">Sign in</h2>
+            <h2 class="text-center mb-0">@Model.T.Title</h2>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col">
                     <form method="post">
                         <div class="mb-3">
-                            <label for="username" class="form-label">Username or email</label>
+                            <label for="username" class="form-label">@Model.T.UsernameEmail</label>
                             <input type="text"
-                                class="form-control @(Model.Errors.ContainsKey("Username") ? "is-invalid" : string.Empty)"
-                                id="username" name="Username">
-                            @if (Model.Errors.ContainsKey("Username"))
+                                class="form-control @(Model.Errors.ContainsKey(nameof(Model.Username)) ? "is-invalid" : string.Empty)"
+                                id="username" name=@nameof(Model.Username)>
+                            @if (Model.Errors.ContainsKey(nameof(Model.Username)))
                             {
                                 <div class="invalid-feedback">
-                                    @Model.Errors["Username"]
+                                    @Model.Errors[nameof(Model.Username)]
                                 </div>
                             }
                         </div>
                         <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
+                            <label for="password" class="form-label">@Model.T.Password</label>
                             <input type="password"
-                                class="form-control @(Model.Errors.ContainsKey("Password") ? "is-invalid" : string.Empty)"
-                                id="password" name="Password">
-                            @if (Model.Errors.ContainsKey("Password"))
+                                class="form-control @(Model.Errors.ContainsKey(nameof(Model.Password)) ? "is-invalid" : string.Empty)"
+                                id="password" name=@nameof(Model.Password)>
+                            @if (Model.Errors.ContainsKey(nameof(Model.Password)))
                             {
                                 <div class="invalid-feedback">
-                                    @Model.Errors["Password"]
+                                    @Model.Errors[nameof(Model.Password)]
                                 </div>
                             }
                         </div>
@@ -44,13 +44,13 @@
                             </div>
                         }
                         <div class="d-flex justify-content-between">
-                            <a href="/reset-password" class="card-link">Forgot password?</a>
-                            <button class="btn btn-primary" type="submit">Sign in</button>
+                            <a href="/reset-password" class="card-link">@Model.T.ForgotPassword</a>
+                            <button class="btn btn-primary" type="submit">@Model.T.SignIn</button>
                         </div>
                     </form>
                 </div>
                 <div class="col">
-                    <h5 class="card-title text-center">External</h5>
+                    <h5 class="card-title text-center">@Model.T.External</h5>
                     <button class="btn btn-outline-secondary w-100 mb-3">
                         <i class="bi bi-github">&nbsp;</i>
                         <span>GitHub</span>

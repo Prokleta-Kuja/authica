@@ -20,7 +20,7 @@ namespace authica
             o.Cookie.IsEssential = true;
             o.Cookie.HttpOnly = true;
             o.Cookie.Path = C.Routes.Root;
-            o.Cookie.Domain = C.Configuration.Current.Domain;
+            o.Cookie.Domain = $".{C.Configuration.Current.Domain}";
             o.Cookie.SameSite = SameSiteMode.None;
             o.Cookie.MaxAge = C.Configuration.Current.MaxSessionDuration;
 

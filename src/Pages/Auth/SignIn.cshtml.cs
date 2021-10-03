@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using authica.Entities;
 using authica.Services;
+using authica.Translations;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -20,6 +21,7 @@ namespace authica.Pages.Auth
         readonly AppDbContext _db;
         readonly IPasswordHasher _hasher;
         readonly IpSecurity _ipsec;
+        public readonly ISignIn T = LocalizationFactory.SignIn();
         public SignInModel(AppDbContext db, IPasswordHasher hasher, IpSecurity ipsec)
         {
             _db = db;
@@ -35,10 +37,10 @@ namespace authica.Pages.Auth
             Errors.Clear();
 
             if (string.IsNullOrWhiteSpace(Username))
-                Errors.TryAdd(nameof(Username), "Required");
+                Errors.TryAdd(nameof(Username), T.ValidationRequired);
 
             if (string.IsNullOrWhiteSpace(Password))
-                Errors.TryAdd(nameof(Password), "Required");
+                Errors.TryAdd(nameof(Password), T.ValidationRequired);
 
             if (Errors.Any())
                 return Page();
@@ -54,9 +56,9 @@ namespace authica.Pages.Auth
             if (user == null || user.Disabled.HasValue)
             {
                 if (_ipsec.LogSignIn())
-                    return StatusCode(StatusCodes.Status418ImATeapot, "Your IP address has been blocked.");
+                    return StatusCode(StatusCodes.Status418ImATeapot, T.IpBlocked);
 
-                Errors.TryAdd(string.Empty, "Invalid username/email and/or password");
+                Errors.TryAdd(string.Empty, T.ValidationInvalid);
                 return Page();
             }
 
@@ -78,9 +80,9 @@ namespace authica.Pages.Auth
             else
             {
                 if (_ipsec.LogSignIn())
-                    return StatusCode(StatusCodes.Status418ImATeapot, "Your IP address has been blocked.");
+                    return StatusCode(StatusCodes.Status418ImATeapot, T.IpBlocked);
 
-                Errors.TryAdd(string.Empty, "Invalid username/email and/or password");
+                Errors.TryAdd(string.Empty, T.ValidationInvalid);
                 return Page();
             }
         }

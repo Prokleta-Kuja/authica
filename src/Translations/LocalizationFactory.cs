@@ -22,13 +22,49 @@ namespace authica.Translations
 
             return new Navigation_en();
         }
-        public static IPeople People() => People(C.Env.Locale);
-        public static IPeople People(string locale)
+
+        // Pages
+        public static IResetPassword ResetPassword() => ResetPassword(C.Env.Locale);
+        public static IResetPassword ResetPassword(string locale)
         {
             if (locale.StartsWith("hr"))
-                return new People_hr();
+                return new ResetPassword_hr();
 
-            return new People_en();
+            return new ResetPassword_en();
+        }
+        public static ISignIn SignIn() => SignIn(C.Env.Locale);
+        public static ISignIn SignIn(string locale)
+        {
+            if (locale.StartsWith("hr"))
+                return new SignIn_hr();
+
+            return new SignIn_en();
+        }
+        public static ISignOut SignOut() => SignOut(C.Env.Locale);
+        public static ISignOut SignOut(string locale)
+        {
+            if (locale.StartsWith("hr"))
+                return new SignOut_hr();
+
+            return new SignOut_en();
+        }
+
+        // Services
+        public static IIpSecurity IpSecurity() => IpSecurity(C.Env.Locale);
+        public static IIpSecurity IpSecurity(string locale)
+        {
+            if (locale.StartsWith("hr"))
+                return new IpSecurity_hr();
+
+            return new IpSecurity_en();
+        }
+        public static IMailService MailService() => MailService(C.Env.Locale);
+        public static IMailService MailService(string locale)
+        {
+            if (locale.StartsWith("hr"))
+                return new MailService_hr();
+
+            return new MailService_en();
         }
     }
 }

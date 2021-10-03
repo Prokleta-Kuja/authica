@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using authica.Entities;
 using authica.Services;
+using authica.Translations;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -21,13 +22,17 @@ namespace authica.Pages.Auth
         readonly IPasswordHasher _hasher;
         readonly IMemoryCache _cache;
         readonly IpSecurity _ipsec;
-        public ResetPasswordModel(AppDbContext db, IPasswordHasher hasher, IMemoryCache cache, IpSecurity ipsec)
+        readonly MailService _mail;
+        public readonly IResetPassword T = LocalizationFactory.ResetPassword();
+        public ResetPasswordModel(AppDbContext db, IPasswordHasher hasher, IMemoryCache cache, IpSecurity ipsec, MailService mail)
         {
             _db = db;
             _hasher = hasher;
             _cache = cache;
             _ipsec = ipsec;
+            _mail = mail;
         }
+        public bool EmailServiceSetup => _mail.IsSetup;
         public bool EmailSent { get; set; }
         [FromRoute] public Guid? Token { get; set; }
         [FromForm] public string? Email { get; set; }
@@ -50,7 +55,7 @@ namespace authica.Pages.Auth
         public async Task<IActionResult> OnPostEmail()
         {
             if (string.IsNullOrWhiteSpace(Email))
-                Errors.TryAdd(nameof(Email), "Required");
+                Errors.TryAdd(nameof(Email), T.ValidationRequired);
             else
             {
                 EmailSent = true; // Must not leak that email exists or not
@@ -64,9 +69,10 @@ namespace authica.Pages.Auth
 
                     // Count reset attempt as infraction to prevent sending a ton of email
                     if (_ipsec.LogResetPassword())
-                        return StatusCode(StatusCodes.Status418ImATeapot, "Your IP address has been blocked.");
+                        return StatusCode(StatusCodes.Status418ImATeapot, T.IpBlocked);
 
-                    // TODO: send token via email
+                    if (EmailServiceSetup)
+                        await _mail.SendPasswordResetAsync(user, token);
                     System.Diagnostics.Debug.WriteLine($"Reset link {C.Routes.ResetPassword}/{token} for user {user.UserName}");
                 }
             }

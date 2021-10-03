@@ -10,7 +10,7 @@ namespace authica
     {
         public static class Env
         {
-            public static string Locale => Environment.GetEnvironmentVariable("LOCALE") ?? "hr-HR";
+            public static string Locale => Environment.GetEnvironmentVariable("LOCALE") ?? "en-US";
             public static string TimeZone => Environment.GetEnvironmentVariable("TZ") ?? "Europe/Zagreb";
             public static string AdminPassword => Environment.GetEnvironmentVariable("PASSWORD") ?? "P@ssw0rd";
         }
@@ -144,15 +144,27 @@ namespace authica
         public Settings()
         {
             _rsa = RSA.Create();
+            SmtpFromName = Name;
+            SmtpFromAddress = $"authica@{Domain}";
         }
         public string Name { get; set; } = "authica";
-        public string Domain { get; set; } = ".localhost";
+        public string HostName { get; set; } = "http://localhost:5000";
+        public string Domain { get; set; } = "localhost";
         public string? MaxMindLicenseKey { get; set; }
         public HashSet<string> AllowedCountryCodes { get; set; } = new();
         public int MaxInfractions { get; set; } = 5;
         public TimeSpan InfractionExpiration { get; set; } = TimeSpan.FromMinutes(15);
         public TimeSpan BanTime { get; set; } = TimeSpan.FromHours(12);
         public TimeSpan MaxSessionDuration { get; set; } = TimeSpan.FromHours(2);
+        public string? SmtpHost { get; set; }
+        public int? SmtpPort { get; set; }
+        public bool SmtpSsl { get; set; }
+        public TimeSpan SmtpTimeout { get; set; } = TimeSpan.FromSeconds(10);
+        public string? SmtpUser { get; set; }
+        public string? SmtpPassword { get; set; }
+        public string SmtpFromName { get; set; }
+        public string SmtpFromAddress { get; set; }
+        public string SmtpSubjectPrefix { get; set; } = "[authica] - ";
 
         public string? Key { get; set; }
         public RSA SecurityKey => _rsa;
