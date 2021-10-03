@@ -9,7 +9,7 @@ namespace authica.Translations
         string SignIn { get; }
         string External { get; }
         string IpBlocked { get; }
-        string ValidationInvalid { get; }
+        string ValidationCredentials { get; }
     }
     public class SignIn_en : Standard_en, ISignIn
     {
@@ -20,7 +20,7 @@ namespace authica.Translations
         public string SignIn => "Sign in";
         public string External => "External";
         public string IpBlocked => "Your IP address has been blocked.";
-        public string ValidationInvalid => "Invalid credentials";
+        public string ValidationCredentials => "Invalid credentials";
     }
     public class SignIn_hr : Standard_hr, ISignIn
     {
@@ -31,6 +31,6 @@ namespace authica.Translations
         public string SignIn => "Prijava";
         public string External => "Vanjski";
         public string IpBlocked => "Vaša IP adresa je blokirana.";
-        public string ValidationInvalid => "Neispravne vjerodajnice";
+        public string ValidationCredentials => "Neispravne vjerodajnice";
     }
 }

@@ -1,0 +1,69 @@
+@attribute [Microsoft.AspNetCore.Components.RouteAttribute(C.Routes.User)]
+@using Models
+
+<div class="row">
+    @if (_create != null)
+    {
+        <div class="col"></div>
+        <div class="col">
+        <legend>@_t.AddTitle</legend>
+        <form @onsubmit=SaveCreateClicked>
+            <TextBox For=@nameof(UserCreateModel.Email) Label=@_t.Email @bind-Value=_create.Email Errors=_errors
+                Required AutoFocus Type="email" AutoComplete="off" />
+            <TextBox For=@nameof(UserCreateModel.UserName) Label=@_t.UserName @bind-Value=_create.UserName Required
+                Errors=_errors AutoComplete="off" />
+            <TextBox For=@nameof(UserCreateModel.FirstName) Label=@_t.FirstName @bind-Value=_create.FirstName
+                Errors=_errors />
+            <TextBox For=@nameof(UserCreateModel.LastName) Label=@_t.LastName @bind-Value=_create.LastName
+                Errors=_errors />
+            <TextBox For=@nameof(UserCreateModel.TimeZone) Label=@_t.TimeZone @bind-Value=_create.TimeZone
+                Errors=_errors />
+            <TextBox For=@nameof(UserCreateModel.Locale) Label=@_t.Locale @bind-Value=_create.Locale Errors=_errors />
+            <TextBox For=@nameof(UserCreateModel.Password) Label=@_t.Password @bind-Value=_create.Password
+                Errors=_errors Type="password" AutoComplete="new-password" />
+            <Switch For=@nameof(UserCreateModel.IsAdmin) Label=@_t.IsAdmin @bind-Value=_create.IsAdmin Errors=_errors />
+            <Switch For=@nameof(UserEditModel.Disabled) Label=@_t.Disabled @bind-Value=_create.Disabled
+                Errors=_errors />
+
+            <div class="float-end">
+                <button type="submit" class="btn btn-primary">@_t.Save</button>
+                <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
+            </div>
+        </form>
+    </div>
+        <div class="col"></div>
+    }
+    else if (_edit != null)
+    {
+        <div class="col">
+            <legend>@_t.EditTitle @_edit.Email</legend>
+            <form @onsubmit=SaveEditClicked>
+                <TextBox For=@nameof(UserEditModel.Email) Label=@_t.Email @bind-Value=_edit.Email Errors=_errors Required
+                AutoFocus Type="email" AutoComplete="off" />
+                <TextBox For=@nameof(UserEditModel.UserName) Label=@_t.UserName @bind-Value=_edit.UserName Required
+                Errors=_errors AutoComplete="off" />
+                <TextBox For=@nameof(UserEditModel.FirstName) Label=@_t.FirstName @bind-Value=_edit.FirstName
+                Errors=_errors />
+                <TextBox For=@nameof(UserEditModel.LastName) Label=@_t.LastName @bind-Value=_edit.LastName Errors=_errors />
+                <TextBox For=@nameof(UserEditModel.TimeZone) Label=@_t.TimeZone @bind-Value=_edit.TimeZone Errors=_errors />
+                <TextBox For=@nameof(UserEditModel.Locale) Label=@_t.Locale @bind-Value=_edit.Locale Errors=_errors />
+                <TextBox For=@nameof(UserEditModel.NewPassword) Label=@_t.NewPassword @bind-Value=_edit.NewPassword
+                Errors=_errors Type="password" AutoComplete="new-password" />
+                <Switch For=@nameof(UserEditModel.IsAdmin) Label=@_t.IsAdmin @bind-Value=_edit.IsAdmin Errors=_errors />
+                <Switch For=@nameof(UserEditModel.Disabled) Label=@_t.Disabled @bind-Value=_edit.Disabled Errors=_errors />
+
+                <div class="float-end">
+                    <button type="submit" class="btn btn-primary">@_t.SaveChanges</button>
+                    <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
+                </div>
+            </form>
+        </div>
+        <div class="col">
+        User roles
+    </div>
+    }
+    else
+    {
+        <text>@_t.NotFound</text>
+    }
+</div>

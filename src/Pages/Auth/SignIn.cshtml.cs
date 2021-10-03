@@ -59,7 +59,7 @@ namespace authica.Pages.Auth
                 if (_ipsec.LogSignIn())
                     return StatusCode(StatusCodes.Status418ImATeapot, T.IpBlocked);
 
-                Errors.TryAdd(string.Empty, T.ValidationInvalid);
+                Errors.TryAdd(string.Empty, T.ValidationCredentials);
                 return Page();
             }
 
@@ -83,7 +83,7 @@ namespace authica.Pages.Auth
                 if (_ipsec.LogSignIn())
                     return StatusCode(StatusCodes.Status418ImATeapot, T.IpBlocked);
 
-                Errors.TryAdd(string.Empty, T.ValidationInvalid);
+                Errors.TryAdd(string.Empty, T.ValidationCredentials);
                 return Page();
             }
         }

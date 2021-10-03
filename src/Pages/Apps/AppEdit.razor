@@ -12,7 +12,7 @@
                 AutoFocus />
             <TextBox For=@nameof(AppCreateModel.RedirectUri) Label=@_t.RedirectUri @bind-Value=_create.RedirectUri
                 Required Errors=_errors />
-            <TextBox For=@nameof(AppCreateModel.Secret) Label=@_t.Secret @bind-Value=_create.Secret Errors=_errors />
+            <TextBox For=@nameof(AppCreateModel.Secret) Label=@_t.Secret @bind-Value=_create.Secret Errors=_errors Type="password" AutoComplete="new-password" />
             <Switch For=@nameof(AppCreateModel.AllowAllUsers) Label=@_t.AllowAllUsers @bind-Value=_create.AllowAllUsers
                 Errors=_errors />
             <Switch For=@nameof(AppCreateModel.Disabled) Label=@_t.Disabled @bind-Value=_create.Disabled
@@ -36,7 +36,7 @@
                 <TextBox For=@nameof(AppEditModel.RedirectUri) Label=@_t.RedirectUri @bind-Value=_edit.RedirectUri Required
                 Errors=_errors />
                 <TextBox For=@nameof(AppEditModel.NewSecret) Label=@_t.NewSecret @bind-Value=_edit.NewSecret
-                Errors=_errors />
+                Errors=_errors Type="new-password" />
                 <Switch For=@nameof(AppEditModel.AllowAllUsers) Label=@_t.AllowAllUsers @bind-Value=_edit.AllowAllUsers
                 Errors=_errors />
                 <Switch For=@nameof(AppEditModel.Disabled) Label=@_t.Disabled @bind-Value=_edit.Disabled Errors=_errors />

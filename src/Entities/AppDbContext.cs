@@ -69,6 +69,8 @@ namespace authica.Entities
         {
             var adminUser = new User("admin@te.st", "admin", null, null) { IsAdmin = true };
             adminUser.SetPassword(C.Env.AdminPassword, hasher);
+            adminUser.TimeZone = C.Env.TimeZone;
+            adminUser.Locale = C.Env.Locale;
             Users.Add(adminUser);
 
             await SaveChangesAsync();

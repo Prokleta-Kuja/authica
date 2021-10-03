@@ -20,6 +20,7 @@ namespace authica.Translations
         string NotFound { get; }
         string ValidationRequired { get; }
         string ValidationDuplicate { get; }
+        string ValidationInvalid { get; }
     }
     public class Standard_en : IStandard
     {
@@ -41,6 +42,7 @@ namespace authica.Translations
         public string NotFound => "Not found.";
         public string ValidationRequired => "Required";
         public string ValidationDuplicate => "Duplicate";
+        public string ValidationInvalid => "Invalid";
     }
     public class Standard_hr : IStandard
     {
@@ -62,5 +64,6 @@ namespace authica.Translations
         public string NotFound => "Nema.";
         public string ValidationRequired => "Obavezno";
         public string ValidationDuplicate => "Duplikat";
+        public string ValidationInvalid => "Neispravno";
     }
 }

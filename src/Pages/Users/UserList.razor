@@ -1,0 +1,53 @@
+@attribute [Microsoft.AspNetCore.Components.RouteAttribute(C.Routes.Users)]
+
+<h1>@_t.ListTitle</h1>
+
+<div class="table-responsive">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th>@_t.TableEmail</th>
+                <th>@_t.TableUserName</th>
+                <th>@_t.TableCreated</th>
+                <th>@_t.TableDisabled</th>
+                <th>@_t.TableLastLogin</th>
+                <th class="text-end">
+                    <a class="btn btn-sm btn-outline-primary" href=@C.Routes.UsersFor(Guid.Empty)>@_t.Add</a>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _users)
+            {
+                <tr @key=item.UserId>
+                    <td class="user-select-all">@item.Email</td>
+                    <td class="user-select-all">@item.UserName</td>
+                    <td class="user-select-all">@_f.Display(item.Created, true)</td>
+                    <td class="user-select-all">
+                        @if (item.Disabled.HasValue)
+                        {
+                            <span>@_f.Display(item.Disabled, true)</span>
+                        }
+                        else
+                        {
+                            <span>@_t.RowDisabled</span>
+                        }
+                    </td>
+                    <td class="user-select-all">
+                        @if (item.LastLogin.HasValue)
+                        {
+                            <span>@_f.Display(item.LastLogin, true)</span>
+                        }
+                        else
+                        {
+                            <span>@_t.RowLastLogin</span>
+                        }
+                    </td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" href=@C.Routes.UsersFor(item.AliasId)>@_t.Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -24,6 +24,9 @@ namespace authica
             public const string Apps = "/apps";
             public const string App = "/apps/{AliasId:guid}";
             public static string AppsFor(Guid aliasId) => $"{Apps}/{aliasId}";
+            public const string Users = "/users";
+            public const string User = "/users/{AliasId:guid}";
+            public static string UsersFor(Guid aliasId) => $"{Users}/{aliasId}";
         }
         public static class Paths
         {

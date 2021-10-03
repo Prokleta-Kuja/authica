@@ -56,6 +56,14 @@ namespace authica.Translations
 
             return new Apps_en();
         }
+        public static IUsers Users() => Users(C.Env.Locale);
+        public static IUsers Users(string locale)
+        {
+            if (locale.StartsWith("hr"))
+                return new Users_hr();
+
+            return new Users_en();
+        }
 
         // Services
         public static IIpSecurity IpSecurity() => IpSecurity(C.Env.Locale);
