@@ -1,50 +1,105 @@
 @attribute [Microsoft.AspNetCore.Components.RouteAttribute(C.Routes.Role)]
 @using Models
 
-<div class="row">
-    @if (_create != null)
-    {
-        <div class="col"></div>
-        <div class="col">
-        <legend>@_t.AddTitle</legend>
-        <form @onsubmit=SaveCreateClicked>
-            <TextBox For=@nameof(RoleCreateModel.Name) Label=@_t.Name @bind-Value=_create.Name Errors=_errors Required
-                AutoFocus />
-            <Switch For=@nameof(RoleCreateModel.Disabled) Label=@_t.Disabled @bind-Value=_create.Disabled
-                Errors=_errors />
-
-            <div class="float-end">
+@if (_create != null)
+{
+    <div class="row justify-content-center">
+    <div class="col-lg-4 col-sm-6 mt-2">
+        <form class="card" @onsubmit=SaveCreateClicked>
+            <div class="card-header">@_t.AddTitle</div>
+            <div class="card-body">
+                <TextBox For=@nameof(RoleCreateModel.Name) Label=@_t.Name @bind-Value=_create.Name Errors=_errors
+                    Required AutoFocus />
+                <Switch For=@nameof(RoleCreateModel.Disabled) Label=@_t.Disabled @bind-Value=_create.Disabled
+                    Errors=_errors />
+            </div>
+            <div class="card-footer text-end">
                 <button type="submit" class="btn btn-success">@_t.Save</button>
                 <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
             </div>
         </form>
     </div>
-        <div class="col"></div>
-    }
-    else if (_edit != null)
-    {
-        <div class="col">
-            <legend>@_t.EditTitle @_edit.Name</legend>
-            <form @onsubmit=SaveEditClicked>
-                <TextBox For=@nameof(RoleEditModel.Name) Label=@_t.Name @bind-Value=_edit.Name Errors=_errors Required
-                AutoFocus />
-                <Switch For=@nameof(RoleEditModel.Disabled) Label=@_t.Disabled @bind-Value=_edit.Disabled Errors=_errors />
-
-                <div class="float-end">
-                    <button type="submit" class="btn btn-success">@_t.SaveChanges</button>
-                    <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
-                </div>
-            </form>
-        </div>
-        <div class="col">
-            Apps
-        </div>
-        <div class="col">
-        Users
-    </div>
-    }
-    else
-    {
-        <text>@_t.NotFound</text>
-    }
 </div>
+}
+else if (_edit != null)
+{
+    <form @onsubmit=SaveEditClicked class="row justify-content-center">
+    <div class="col-lg-4 col-md-7 col-sm-9 mt-2">
+        <div class="card">
+            <div class="card-header"> @_t.EditTitle @_edit.Name </div>
+            <div class="card-body">
+                <TextBox For=@nameof(RoleEditModel.Name) Label=@_t.Name @bind-Value=_edit.Name Errors=_errors Required
+                    AutoFocus />
+                <Switch For=@nameof(RoleEditModel.Disabled) Label=@_t.Disabled @bind-Value=_edit.Disabled
+                    Errors=_errors />
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-7 col-sm-9 mt-2">
+        <div class="card">
+            <div class="card-header">@_t.UsersTitle</div>
+            <ul class="list-group list-group-flush">
+                @foreach (var user in _roleUsers)
+                    {
+                        <li @key=user.Key class="list-group-item">
+                            <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+                                <h6 class="mb-0">@user.Value.Email</h6>
+                                <button type="button" class="btn btn-outline-danger"
+                            @onclick="( () => RemoveUser(user.Value.AliasId))">@_t.Remove</button>
+                            </div>
+                        </li>
+                    }
+                </ul>
+                <div class="card-footer">
+                    <div class="input-group">
+                        <select class="form-select" @bind=_selectedUser>
+                            <option value="" selected disabled>@_t.ChooseUser</option>
+                            @foreach (var user in _allUsers)
+                            {
+                                <option value=@user.Key>@user.Value.Email</option>
+                            }
+                        </select>
+                        <button type="button" class="btn btn-success" @onclick=AddUser>@_t.Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-7 col-sm-9 mt-2">
+            <div class="card">
+                <div class="card-header">@_t.AppsTitle</div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var app in _roleApps)
+                    {
+                        <li @key=app.Key class="list-group-item">
+                            <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+                                <h6 class="mb-0">@app.Value.Name</h6>
+                                <button type="button" class="btn btn-outline-danger"
+                            @onclick="( () => RemoveApp(app.Value.AliasId))">@_t.Remove</button>
+                            </div>
+                        </li>
+                    }
+                </ul>
+                <div class="card-footer">
+                    <div class="input-group">
+                        <select class="form-select" @bind=_selectedApp>
+                            <option value="" selected disabled>@_t.ChooseApp</option>
+                            @foreach (var app in _allApps)
+                            {
+                                <option value=@app.Key>@app.Value.Name</option>
+                            }
+                        </select>
+                        <button type="button" class="btn btn-success" @onclick=AddApp>@_t.Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 mt-2 text-end">
+            <button type="submit" class="btn btn-success">@_t.SaveChanges</button>
+            <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
+        </div>
+    </form>
+}
+else
+{
+    <text>@_t.NotFound</text>
+}
