@@ -34,7 +34,7 @@ namespace authica.Translations
         public string Remove => "Remove";
         public string Close => "Close";
         public string SaveChanges => "Save changes";
-        public string Save => "Submit";
+        public string Save => "Save";
         public string Cancel => "Cancel";
         public string Clear => "Clear";
         public string Enable => "Enable";

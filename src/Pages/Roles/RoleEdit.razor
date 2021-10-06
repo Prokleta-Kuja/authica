@@ -14,7 +14,7 @@
                 Errors=_errors />
 
             <div class="float-end">
-                <button type="submit" class="btn btn-primary">@_t.Save</button>
+                <button type="submit" class="btn btn-success">@_t.Save</button>
                 <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
             </div>
         </form>
@@ -31,7 +31,7 @@
                 <Switch For=@nameof(RoleEditModel.Disabled) Label=@_t.Disabled @bind-Value=_edit.Disabled Errors=_errors />
 
                 <div class="float-end">
-                    <button type="submit" class="btn btn-primary">@_t.SaveChanges</button>
+                    <button type="submit" class="btn btn-success">@_t.SaveChanges</button>
                     <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
                 </div>
             </form>
@@ -40,8 +40,8 @@
             Apps
         </div>
         <div class="col">
-            Users
-        </div>
+        Users
+    </div>
     }
     else
     {

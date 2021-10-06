@@ -1,12 +1,9 @@
 ﻿@using System.Reflection
 @using authica.Translations
 
-<nav class="navbar navbar-expand-md navbar-light bg-light">
+<nav class="navbar navbar-expand-md navbar-dark bg-primary">
     <div class="container-xxl">
-        <span>
-            <a class="navbar-brand me-0" href="@C.Routes.Root">@_t.App</a>
-            <sup class="text-muted user-select-all">@Version</sup>
-        </span>
+        <a class="navbar-brand me-0" href="@C.Routes.Root">@_t.App<sup class="text-muted">@Version</sup></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
             aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -17,15 +14,18 @@
                 <li class="nav-item"><a class="nav-link" href="@C.Routes.Users">@_t.Users</a></li>
                 <li class="nav-item"><a class="nav-link" href="@C.Routes.Apps">@_t.Apps</a></li>
             </ul>
-            <div class="dropdown text-end">
-                <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="user-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="dropdown text-end navbar-nav">
+                <a href="#" class="nav-link d-block text-decoration-none dropdown-toggle" id="user-dropdown"
+                    data-bs-toggle="dropdown" aria-expanded="false">
                     Ja korisnik
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="user-dropdown">
                     <li><a class="dropdown-item" href="#">New project...</a></li>
                     <li><a class="dropdown-item" href="#">Settings</a></li>
                     <li><a class="dropdown-item" href="#">Profile</a></li>
-                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
                     <li><a class="dropdown-item" href="@C.Routes.SignOut">@_t.SignOut</a></li>
                 </ul>
             </div>
@@ -33,11 +33,12 @@
     </div>
 </nav>
 
-@code{
+@code {
     private string? Version;
     private readonly INavigation _t = LocalizationFactory.Navigation();
     protected override void OnInitialized()
     {
-        Version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+        Version =
+        Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
     }
 }

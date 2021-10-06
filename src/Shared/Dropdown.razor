@@ -1,7 +1,11 @@
-<div class="form-check form-switch @(NoMargin ? "" : "mb-3")">
-    <input @ref=Input class="form-check-input @(_isError ? "is-invalid":"")" type="checkbox" id="@For"
-        required=@Required @bind=@Value @onblur=Update>
-    <label class="form-check-label" for="@For">@Label @(Required ? "*":"")</label>
+<div class="mb-3">
+    <label for="@For" class="form-label">@Label @(Required ? "*":"")</label>
+    <select @ref=Input class="form-select @(_isError ? "is-invalid":"")" @bind=@Value @onblur=Update required=@Required>
+        @foreach (var item in Items)
+        {
+            <option value="@item.Key">@item.Value</option>
+        }
+    </select>
     @if (_isError)
     {
         <div class="invalid-feedback">
@@ -15,18 +19,18 @@
     private ElementReference Input;
     [Parameter] public string For { get; set; } = null!;
     [Parameter] public string Label { get; set; } = null!;
-    [Parameter] public bool Value { get; set; }
-    [Parameter] public EventCallback<bool> ValueChanged { get; set; }
+    [Parameter] public int Value { get; set; }
+    [Parameter] public EventCallback<int> ValueChanged { get; set; }
     [Parameter] public bool Required { get; set; }
-    [Parameter] public Dictionary<string, string>? Errors { get; set; }
+    [Parameter] public Dictionary<int, string> Items { get; set; } = null!;
+    [Parameter]
+    public Dictionary<string, string>? Errors { get; set; }
     [Parameter] public bool AutoFocus { get; set; }
-    [Parameter] public bool NoMargin { get; set; }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && AutoFocus)
             await Input.FocusAsync();
     }
-
     private async Task Update()
     {
         if (_isError)

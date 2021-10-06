@@ -106,7 +106,6 @@ namespace authica.Pages.Users
                 _item.SetPassword(_edit.NewPassword, Hasher);
 
             await Db.SaveChangesAsync();
-            Nav.NavigateTo(C.Routes.Users);
         }
     }
 }

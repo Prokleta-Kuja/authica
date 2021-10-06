@@ -1,58 +1,97 @@
 @attribute [Microsoft.AspNetCore.Components.RouteAttribute(C.Routes.App)]
 @using Models
 
-<div class="row">
-    @if (_create != null)
-    {
-        <div class="col"></div>
-        <div class="col">
-        <legend>@_t.AddTitle</legend>
-        <form @onsubmit=SaveCreateClicked>
-            <TextBox For=@nameof(AppCreateModel.Name) Label=@_t.Name @bind-Value=_create.Name Errors=_errors Required
-                AutoFocus />
-            <TextBox For=@nameof(AppCreateModel.RedirectUri) Label=@_t.RedirectUri @bind-Value=_create.RedirectUri
-                Required Errors=_errors />
-            <TextBox For=@nameof(AppCreateModel.Secret) Label=@_t.Secret @bind-Value=_create.Secret Errors=_errors Type="password" AutoComplete="new-password" />
-            <Switch For=@nameof(AppCreateModel.AllowAllUsers) Label=@_t.AllowAllUsers @bind-Value=_create.AllowAllUsers
-                Errors=_errors />
-            <Switch For=@nameof(AppCreateModel.Disabled) Label=@_t.Disabled @bind-Value=_create.Disabled
-                Errors=_errors />
-
-            <div class="float-end">
-                <button type="submit" class="btn btn-primary">@_t.Save</button>
-                <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
-            </div>
-        </form>
-    </div>
-        <div class="col"></div>
-    }
-    else if (_edit != null)
-    {
-        <div class="col">
-            <legend>@_t.EditTitle @_edit.Name</legend>
-            <form @onsubmit=SaveEditClicked>
-                <TextBox For=@nameof(AppEditModel.Name) Label=@_t.Name @bind-Value=_edit.Name Errors=_errors Required
-                AutoFocus />
-                <TextBox For=@nameof(AppEditModel.RedirectUri) Label=@_t.RedirectUri @bind-Value=_edit.RedirectUri Required
-                Errors=_errors />
-                <TextBox For=@nameof(AppEditModel.NewSecret) Label=@_t.NewSecret @bind-Value=_edit.NewSecret
-                Errors=_errors Type="new-password" />
-                <Switch For=@nameof(AppEditModel.AllowAllUsers) Label=@_t.AllowAllUsers @bind-Value=_edit.AllowAllUsers
-                Errors=_errors />
-                <Switch For=@nameof(AppEditModel.Disabled) Label=@_t.Disabled @bind-Value=_edit.Disabled Errors=_errors />
-
-                <div class="float-end">
-                    <button type="submit" class="btn btn-primary">@_t.SaveChanges</button>
+@if (_create != null)
+{
+    <div class="row justify-content-center">
+        <div class="col-lg-4 col-sm-6 mt-2">
+            <form class="card" @onsubmit=SaveCreateClicked>
+                <div class="card-header">@_t.AddTitle</div>
+                <div class="card-body">
+                    <TextBox For=@nameof(AppCreateModel.Name) Label=@_t.Name @bind-Value=_create.Name Errors=_errors Required
+                        AutoFocus />
+                    <TextBox For=@nameof(AppCreateModel.RedirectUri) Label=@_t.RedirectUri @bind-Value=_create.RedirectUri Required
+                        Errors=_errors />
+                    <TextBox For=@nameof(AppCreateModel.Secret) Label=@_t.Secret @bind-Value=_create.Secret Errors=_errors
+                        Type="password" AutoComplete="new-password" />
+                    <Switch For=@nameof(AppCreateModel.AllowAllUsers) Label=@_t.AllowAllUsers @bind-Value=_create.AllowAllUsers
+                        Errors=_errors />
+                    <Switch For=@nameof(AppCreateModel.Disabled) Label=@_t.Disabled @bind-Value=_create.Disabled Errors=_errors NoMargin />
+                </div>
+                <div class="card-footer text-end">
+                    <button type="submit" class="btn btn-success">@_t.Save</button>
                     <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
                 </div>
             </form>
         </div>
-        <div class="col">
-        App roles
     </div>
-    }
-    else
-    {
-        <text>@_t.NotFound</text>
-    }
-</div>
+}
+else if (_edit != null && _item != null)
+{
+    <form @onsubmit=SaveEditClicked class="row justify-content-center">
+    <div class="col-lg-4 col-sm-6 mt-2">
+        <div class="card">
+            <div class="card-header"> @_t.EditTitle @_edit.Name </div>
+            <div class="card-body">
+                <TextBox For=@nameof(AppEditModel.Name) Label=@_t.Name @bind-Value=_edit.Name Errors=_errors Required
+                    AutoFocus />
+                <TextBox For=@nameof(AppEditModel.RedirectUri) Label=@_t.RedirectUri @bind-Value=_edit.RedirectUri
+                    Required Errors=_errors />
+                <TextBox For=@nameof(AppEditModel.NewSecret) Label=@_t.NewSecret @bind-Value=_edit.NewSecret
+                    Errors=_errors Type="new-password" />
+                <Switch For=@nameof(AppEditModel.Disabled) Label=@_t.Disabled @bind-Value=_edit.Disabled
+                    Errors=_errors NoMargin />
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-sm-6 mt-2">
+        <div class="card">
+            <div class="card-header">@_t.RestrictionsTitle</div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item list-group-item-secondary gap-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="unrestricted"
+                            checked=@_edit.AllowAllUsers @onchange=ToggleAllowAllUsers>
+                        <label class="form-check-label" for="unrestricted">@_t.AllowAllUsers</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="restricted"
+                            checked=@(!_edit.AllowAllUsers) @onchange=ToggleAllowAllUsers>
+                        <label class="form-check-label" for="restricted">@_t.DisallowAllUsers</label>
+                    </div>
+                </li>
+                @foreach (var role in _appRoles)
+                    {
+                        <li @key=role.Key class="list-group-item">
+                            <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+                                <h6 class="mb-0">@role.Value.Name</h6>
+                                <button class="btn btn-outline-danger"
+                            @onclick="( () => RemoveRole(role.Value.AliasId))">@_t.Remove</button>
+                            </div>
+                        </li>
+                    }
+                </ul>
+                <div class="card-footer">
+                    <div class="input-group">
+                        <select class="form-select" @bind=_selectedRole>
+                            <option value="" selected disabled>@_t.ChooseRole</option>
+                            @foreach (var role in _allRoles)
+                            {
+                                <option value=@role.Key>@role.Value.Name</option>
+                            }
+                        </select>
+                        <button class="btn btn-success" @onclick=AddRole>@_t.Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 mt-2 text-end">
+            <button type="submit" class="btn btn-success">@_t.SaveChanges</button>
+            <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
+        </div>
+    </form>
+}
+else
+{
+    <text>@_t.NotFound</text>
+}

@@ -87,7 +87,6 @@ namespace authica.Pages.Roles
                 _item.Disabled = null;
 
             await Db.SaveChangesAsync();
-            Nav.NavigateTo(C.Routes.Roles);
         }
     }
 }

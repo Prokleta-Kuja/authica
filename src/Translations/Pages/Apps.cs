@@ -5,6 +5,7 @@ namespace authica.Translations
         string ListTitle { get; }
         string AddTitle { get; }
         string EditTitle { get; }
+        string RestrictionsTitle { get; }
         string TableId { get; }
         string TableName { get; }
         string TableCreated { get; }
@@ -15,13 +16,16 @@ namespace authica.Translations
         string Secret { get; }
         string NewSecret { get; }
         string AllowAllUsers { get; }
+        string DisallowAllUsers { get; }
         string Disabled { get; }
+        string ChooseRole { get; }
     }
     public class Apps_en : Standard_en, IApps
     {
         public string ListTitle => "Apps";
         public string AddTitle => "Add App";
         public string EditTitle => "Edit App";
+        public string RestrictionsTitle => "Restrictions";
         public string TableId => "Id";
         public string TableName => "Name";
         public string TableCreated => "Created";
@@ -31,14 +35,17 @@ namespace authica.Translations
         public string RedirectUri => "Redirect Uri";
         public string Secret => "Secret";
         public string NewSecret => "New Secret";
-        public string AllowAllUsers => "Allow All Users";
+        public string AllowAllUsers => "Allow all users";
+        public string DisallowAllUsers => "Restrict to this roles";
         public string Disabled => "Disabled";
+        public string ChooseRole => "Choose role";
     }
     public class Apps_hr : Standard_hr, IApps
     {
         public string ListTitle => "Appovi";
         public string AddTitle => "Dodaj app";
         public string EditTitle => "Izmijeni app";
+        public string RestrictionsTitle => "Ograničenja";
         public string TableId => "Šifra";
         public string TableName => "Naziv";
         public string TableCreated => "Dodano";
@@ -48,7 +55,9 @@ namespace authica.Translations
         public string RedirectUri => "Preusmjeri na uri";
         public string Secret => "Tajna";
         public string NewSecret => "Nova tajna";
-        public string AllowAllUsers => "Dozvoli sve korisnike";
+        public string AllowAllUsers => "Dozvoli svim korisnicima";
+        public string DisallowAllUsers => "Ograniči na uloge";
         public string Disabled => "Onemogućeno";
+        public string ChooseRole => "Odaberi ulogu";
     }
 }

@@ -12,26 +12,33 @@ using Microsoft.JSInterop;
 
 namespace authica.Pages.Apps
 {
-    public partial class AppEdit
+    public partial class AppEdit : IDisposable
     {
         [Inject] private IJSRuntime JS { get; set; } = null!;
         [Inject] private NavigationManager Nav { get; set; } = null!;
-        [Inject] private AppDbContext Db { get; set; } = null!;
         [Inject] private IPasswordHasher Hasher { get; set; } = null!;
+        [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
         [Parameter] public Guid AliasId { get; set; }
+        private AppDbContext _db = null!;
         private AppCreateModel? _create;
         private AppEditModel? _edit;
         private Entities.App? _item;
         private HashSet<string> _names = new();
+        private Guid? _selectedRole;
+        private Dictionary<Guid, Role> _appRoles = new();
+        private Dictionary<Guid, Role> _allRoles = new();
         private Dictionary<string, string>? _errors;
         private readonly IApps _t = LocalizationFactory.Apps();
+
+        protected override void OnInitialized() { _db = DbFactory.CreateDbContext(); base.OnInitialized(); }
+        public void Dispose() => _db?.Dispose();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (!firstRender)
                 return;
 
-            var apps = await Db.Apps.ToListAsync();
+            var apps = await _db.Apps.ToListAsync();
 
             if (AliasId == Guid.Empty)
                 _create = new();
@@ -46,6 +53,19 @@ namespace authica.Pages.Apps
             foreach (var app in apps)
                 if (app.AliasId != AliasId)
                     _names.Add(app.Name.ToUpper());
+
+            _allRoles = await _db.Roles
+                .Include(r => r.AppRoles)
+                .OrderBy(r => r.Name)
+                .ToDictionaryAsync(r => r.AliasId);
+
+            if (_item != null)
+                foreach (var role in _allRoles)
+                    if (role.Value.AppRoles!.Any(ar => ar.AppId == _item.AppId))
+                        _appRoles.Add(role.Key, role.Value);
+
+            foreach (var role in _appRoles)
+                _allRoles.Remove(role.Key);
 
             StateHasChanged();
         }
@@ -66,8 +86,8 @@ namespace authica.Pages.Apps
             if (!string.IsNullOrWhiteSpace(_create.Secret))
                 _item.SecretHash = Hasher.HashPassword(_create.Secret);
 
-            Db.Apps.Add(_item);
-            await Db.SaveChangesAsync();
+            _db.Apps.Add(_item);
+            await _db.SaveChangesAsync();
 
             Nav.NavigateTo(C.Routes.AppsFor(_item.AliasId));
             _create = null;
@@ -95,8 +115,38 @@ namespace authica.Pages.Apps
             if (!string.IsNullOrWhiteSpace(_edit.NewSecret))
                 _item.SecretHash = Hasher.HashPassword(_edit.NewSecret);
 
-            await Db.SaveChangesAsync();
-            Nav.NavigateTo(C.Routes.Apps);
+            await _db.SaveChangesAsync();
+        }
+        void ToggleAllowAllUsers()
+        {
+            _edit!.AllowAllUsers = !_edit.AllowAllUsers;
+            StateHasChanged();
+        }
+        void AddRole()
+        {
+            if (!_selectedRole.HasValue || !_allRoles.TryGetValue(_selectedRole.Value, out var role))
+                return;
+
+            role.AppRoles!.Add(new AppRole { AppId = _item!.AppId });
+
+            _appRoles.Add(role.AliasId, role);
+            _allRoles.Remove(role.AliasId);
+            _selectedRole = null;
+
+            StateHasChanged();
+        }
+        void RemoveRole(Guid roleAliasId)
+        {
+            if (!_appRoles.TryGetValue(roleAliasId, out var role))
+                return;
+
+            var appRole = role.AppRoles!.Single(ar => ar.AppId == _item!.AppId);
+            role.AppRoles!.Remove(appRole);
+
+            _allRoles.Add(role.AliasId, role);
+            _appRoles.Remove(role.AliasId);
+
+            StateHasChanged();
         }
     }
 }

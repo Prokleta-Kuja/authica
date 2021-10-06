@@ -42,6 +42,15 @@ namespace authica
                 options.KnownProxies.Clear();
             });
 
+            services.AddDbContextFactory<AppDbContext>(builder =>
+            {
+                builder.UseSqlite(C.Paths.AppDbConnectionString);
+                if (Debugger.IsAttached)
+                {
+                    builder.EnableSensitiveDataLogging();
+                    builder.LogTo(message => Debug.WriteLine(message), new[] { RelationalEventId.CommandExecuted });
+                }
+            });
             services.AddDbContext<AppDbContext>(builder =>
             {
                 builder.UseSqlite(C.Paths.AppDbConnectionString);
