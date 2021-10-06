@@ -65,24 +65,27 @@ else if (_edit != null && _item != null)
                         <li @key=role.Key class="list-group-item">
                             <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
                                 <h6 class="mb-0">@role.Value.Name</h6>
-                                <button class="btn btn-outline-danger"
+                                <button type="button" class="btn btn-outline-danger"
                             @onclick="( () => RemoveRole(role.Value.AliasId))">@_t.Remove</button>
                             </div>
                         </li>
                     }
                 </ul>
-                <div class="card-footer">
-                    <div class="input-group">
-                        <select class="form-select" @bind=_selectedRole>
-                            <option value="" selected disabled>@_t.ChooseRole</option>
-                            @foreach (var role in _allRoles)
-                            {
-                                <option value=@role.Key>@role.Value.Name</option>
-                            }
-                        </select>
-                        <button class="btn btn-success" @onclick=AddRole>@_t.Add</button>
+                @if(_allRoles.Any())
+                {
+                    <div class="card-footer">
+                        <div class="input-group">
+                            <select class="form-select" @bind=_selectedRole>
+                                <option value="" selected disabled>@_t.ChooseRole</option>
+                                @foreach (var role in _allRoles)
+                                {
+                                    <option value=@role.Key>@role.Value.Name</option>
+                                }
+                            </select>
+                            <button type="button" class="btn btn-success" @onclick=AddRole>@_t.Add</button>
+                        </div>
                     </div>
-                </div>
+                }
             </div>
         </div>
         <div class="col-12 mt-2 text-end">

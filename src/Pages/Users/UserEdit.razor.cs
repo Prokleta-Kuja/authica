@@ -12,27 +12,34 @@ using Microsoft.JSInterop;
 
 namespace authica.Pages.Users
 {
-    public partial class UserEdit
+    public partial class UserEdit : IDisposable
     {
         [Inject] private IJSRuntime JS { get; set; } = null!;
         [Inject] private NavigationManager Nav { get; set; } = null!;
-        [Inject] private AppDbContext Db { get; set; } = null!;
+        [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
         [Inject] private IPasswordHasher Hasher { get; set; } = null!;
         [Parameter] public Guid AliasId { get; set; }
+        private AppDbContext _db = null!;
         private UserCreateModel? _create;
         private UserEditModel? _edit;
         private User? _item;
         private HashSet<string> _names = new();
         private HashSet<string> _emails = new();
+        private Guid? _selectedRole;
+        private Dictionary<Guid, Role> _userRoles = new();
+        private Dictionary<Guid, Role> _allRoles = new();
         private Dictionary<string, string>? _errors;
         private readonly IUsers _t = LocalizationFactory.Users();
+
+        protected override void OnInitialized() { _db = DbFactory.CreateDbContext(); base.OnInitialized(); }
+        public void Dispose() => _db?.Dispose();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (!firstRender)
                 return;
 
-            var users = await Db.Users.ToListAsync();
+            var users = await _db.Users.ToListAsync();
 
             if (AliasId == Guid.Empty)
                 _create = new();
@@ -50,6 +57,19 @@ namespace authica.Pages.Users
                     _names.Add(user.UserName.ToLower());
                     _emails.Add(user.Email.ToLower());
                 }
+
+            _allRoles = await _db.Roles
+                .Include(r => r.UserRoles)
+                .OrderBy(r => r.Name)
+                .ToDictionaryAsync(r => r.AliasId);
+
+            if (_item != null)
+                foreach (var role in _allRoles)
+                    if (role.Value.UserRoles!.Any(ur => ur.UserId == _item.UserId))
+                        _userRoles.Add(role.Key, role.Value);
+
+            foreach (var role in _userRoles)
+                _allRoles.Remove(role.Key);
 
             StateHasChanged();
         }
@@ -72,8 +92,8 @@ namespace authica.Pages.Users
             if (!string.IsNullOrWhiteSpace(_create.Password))
                 _item.SetPassword(_create.Password, Hasher);
 
-            Db.Users.Add(_item);
-            await Db.SaveChangesAsync();
+            _db.Users.Add(_item);
+            await _db.SaveChangesAsync();
 
             Nav.NavigateTo(C.Routes.UsersFor(_item.AliasId));
             _create = null;
@@ -105,7 +125,33 @@ namespace authica.Pages.Users
             if (!string.IsNullOrWhiteSpace(_edit.NewPassword))
                 _item.SetPassword(_edit.NewPassword, Hasher);
 
-            await Db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
+        }
+        void AddRole()
+        {
+            if (!_selectedRole.HasValue || !_allRoles.TryGetValue(_selectedRole.Value, out var role))
+                return;
+
+            role.UserRoles!.Add(new UserRole { UserId = _item!.UserId });
+
+            _userRoles.Add(role.AliasId, role);
+            _allRoles.Remove(role.AliasId);
+            _selectedRole = null;
+
+            StateHasChanged();
+        }
+        void RemoveRole(Guid roleAliasId)
+        {
+            if (!_userRoles.TryGetValue(roleAliasId, out var role))
+                return;
+
+            var userRole = role.UserRoles!.Single(ur => ur.UserId == _item!.UserId);
+            role.UserRoles!.Remove(userRole);
+
+            _allRoles.Add(role.AliasId, role);
+            _userRoles.Remove(role.AliasId);
+
+            StateHasChanged();
         }
     }
 }

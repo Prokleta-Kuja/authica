@@ -5,6 +5,7 @@ namespace authica.Translations
         string ListTitle { get; }
         string AddTitle { get; }
         string EditTitle { get; }
+        string RolesTitle { get; }
         string TableId { get; }
         string TableEmail { get; }
         string TableUserName { get; }
@@ -23,12 +24,14 @@ namespace authica.Translations
         string NewPassword { get; }
         string IsAdmin { get; }
         string Disabled { get; }
+        string ChooseRole { get; }
     }
     public class Users_en : Standard_en, IUsers
     {
         public string ListTitle => "Users";
         public string AddTitle => "Add User";
         public string EditTitle => "Edit User";
+        public string RolesTitle => "Roles";
         public string TableId => "Id";
         public string TableEmail => "Email";
         public string TableUserName => "Username";
@@ -47,12 +50,14 @@ namespace authica.Translations
         public string NewPassword => "New Password";
         public string IsAdmin => "Is Admin";
         public string Disabled => "Disabled";
+        public string ChooseRole => "Choose role";
     }
     public class Users_hr : Standard_hr, IUsers
     {
         public string ListTitle => "Korisnici";
         public string AddTitle => "Dodaj korisnika";
         public string EditTitle => "Izmijeni korisnika";
+        public string RolesTitle => "Uloge";
         public string TableId => "Šifra";
         public string TableEmail => "Email";
         public string TableUserName => "Korisničko ime";
@@ -71,5 +76,6 @@ namespace authica.Translations
         public string NewPassword => "Nova lozinka";
         public string IsAdmin => "Je administrator";
         public string Disabled => "Onemogućen";
+        public string ChooseRole => "Odaberi ulogu";
     }
 }
