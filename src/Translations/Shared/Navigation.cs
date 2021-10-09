@@ -6,6 +6,7 @@ namespace authica.Translations
         string Roles { get; }
         string Users { get; }
         string Apps { get; }
+        string Configuration { get; }
         string SignOut { get; }
     }
     public class Navigation_en : Standard_en, INavigation
@@ -14,6 +15,7 @@ namespace authica.Translations
         public string Roles => "Roles";
         public string Users => "Users";
         public string Apps => "Apps";
+        public string Configuration => "Configuration";
         public string SignOut => "Sign out";
     }
     public class Navigation_hr : Standard_hr, INavigation
@@ -22,6 +24,7 @@ namespace authica.Translations
         public string Roles => "Uloge";
         public string Users => "Users";
         public string Apps => "Appovi";
+        public string Configuration => "Postavke";
         public string SignOut => "Odjava";
     }
 }

@@ -1,0 +1,55 @@
+<div class="mb-3">
+    <label for="@For" class="form-label">@Label @(Required ? "*":"")</label>
+    <input class="form-control @_errorClass" id="@For" placeholder=@PlaceHolder @bind=@Value @onblur=Update
+        required=@Required @ref=Input>
+    @if (_isError)
+    {
+        <div class="invalid-feedback">
+            @Errors![For]
+        </div>
+    }
+</div>
+
+@code {
+    private bool _isError => Errors != null && Errors.ContainsKey(For);
+    private string _errorClass => _isError ? "is-invalid" : string.Empty;
+    private ElementReference Input;
+    [Parameter] public string For { get; set; } = null!;
+    [Parameter] public string Label { get; set; } = null!;
+    [Parameter] public TimeSpan? Value { get; set; }
+    [Parameter] public EventCallback<TimeSpan?> ValueChanged { get; set; }
+    [Parameter] public bool Required { get; set; }
+    [Parameter] public string? PlaceHolder { get; set; } = "00:00:00";
+    [Parameter] public Dictionary<string, string>? Errors { get; set; }
+    [Parameter] public bool AutoFocus { get; set; }
+    string? TimeProxy
+    {
+        get => Value?.ToString();
+        set
+        {
+            if (TimeSpan.TryParse(value, out var ts))
+            {
+                Value = ts;
+            }
+            else //invalid
+            {
+                Value = null;
+            }
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && AutoFocus)
+            await Input.FocusAsync();
+    }
+    private async Task Update()
+    {
+        if (_isError)
+            Errors!.Remove(For);
+
+        if (!ValueChanged.HasDelegate)
+            return;
+
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

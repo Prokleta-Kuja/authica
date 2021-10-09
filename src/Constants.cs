@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace authica
 {
@@ -30,6 +31,7 @@ namespace authica
             public const string Roles = "/roles";
             public const string Role = "/roles/{AliasId:guid}";
             public static string RolesFor(Guid aliasId) => $"{Roles}/{aliasId}";
+            public const string Configuration = "/configuration";
         }
         public static class Paths
         {
@@ -46,26 +48,29 @@ namespace authica
                 IgnoreReadOnlyProperties = true,
             };
             public static Settings Current { get; private set; } = new();
-            public static void Load()
+            public static async ValueTask LoadAsync()
             {
-                string contents = null!;
                 if (file.Exists)
                 {
-                    contents = File.ReadAllText(file.FullName);
-                    Current = JsonSerializer.Deserialize<Settings>(contents) ?? throw new JsonException("Could not load configuration file");
+                    Current = await LoadFromDiskAsync();
                     Current.LoadKeys();
                 }
                 else
                 {
                     Current.LoadKeys();
-                    contents = JsonSerializer.Serialize(Current, serializerOptions);
-                    File.WriteAllText(file.FullName, contents);
+                    await SaveToDiskAsync(Current);
                 }
             }
-            public static void Save()
+            public static async Task<Settings> LoadFromDiskAsync()
             {
-                var contents = JsonSerializer.Serialize(Current, serializerOptions);
-                File.WriteAllText(file.FullName, contents);
+                var contents = await File.ReadAllTextAsync(file.FullName);
+                var settings = JsonSerializer.Deserialize<Settings>(contents) ?? throw new JsonException("Could not load configuration file");
+                return settings;
+            }
+            public static async ValueTask SaveToDiskAsync(Settings settings)
+            {
+                var contents = JsonSerializer.Serialize(settings, serializerOptions);
+                await File.WriteAllTextAsync(file.FullName, contents);
             }
         }
         ///<Summary>
@@ -159,12 +164,12 @@ namespace authica
         public string Name { get; set; } = "authica";
         public string HostName { get; set; } = "http://localhost:5000";
         public string Domain { get; set; } = "localhost";
-        public string? MaxMindLicenseKey { get; set; }
-        public HashSet<string> AllowedCountryCodes { get; set; } = new();
         public int MaxInfractions { get; set; } = 5;
         public TimeSpan InfractionExpiration { get; set; } = TimeSpan.FromMinutes(15);
         public TimeSpan BanTime { get; set; } = TimeSpan.FromHours(12);
         public TimeSpan MaxSessionDuration { get; set; } = TimeSpan.FromHours(2);
+        public string? MaxMindLicenseKey { get; set; }
+        public HashSet<string> AllowedCountryCodes { get; set; } = new();
         public string? SmtpHost { get; set; }
         public int? SmtpPort { get; set; }
         public bool SmtpSsl { get; set; }

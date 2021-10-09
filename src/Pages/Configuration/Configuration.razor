@@ -1,0 +1,63 @@
+@attribute [Microsoft.AspNetCore.Components.RouteAttribute(C.Routes.Configuration)]
+
+@if (_edit != null)
+{
+    <form @onsubmit=Save class="row justify-content-center">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">@_t.DetailsSection</div>
+            <div class="card-body">
+                <TextBox For=@nameof(_edit.SmtpHost) Label="Host" @bind-Value=_edit.SmtpHost Errors=_errors />
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-header">@_t.GeoSection</div>
+            <div class="card-body">
+                <TextBox For=@nameof(_edit.SmtpHost) Label="Host" @bind-Value=_edit.SmtpHost Errors=_errors />
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-header">@_t.SmtpSection</div>
+            @if (!_edit.IsMailSetup)
+                {
+                    <div class="card-header bg-warning d-flex">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <div class="ms-2">@_t.SmtpNotSetup</div>
+                    </div>
+                }
+                <div class="card-body">
+                    <TextBox For=@nameof(_edit.SmtpFromName) Label=@_t.SmtpFromName @bind-Value=_edit.SmtpFromName Required
+                    Errors=_errors />
+                    <TextBox For=@nameof(_edit.SmtpFromAddress) Label=@_t.SmtpFromAddress @bind-Value=_edit.SmtpFromAddress
+                    Required Errors=_errors />
+                    <TextBox For=@nameof(_edit.SmtpSubjectPrefix) Label=@_t.SmtpSubjectPrefix
+                    @bind-Value=_edit.SmtpSubjectPrefix Required Errors=_errors />
+                    <TextBox For=@nameof(_edit.SmtpHost) Label=@_t.SmtpHost @bind-Value=_edit.SmtpHost Errors=_errors />
+                    <IntegerBox For=@nameof(_edit.SmtpPort) Label=@_t.SmtpPort @bind-Value=_edit.SmtpPort Errors=_errors />
+                    <Switch For=@nameof(_edit.SmtpSsl) Label=@_t.SmtpSsl @bind-Value=_edit.SmtpSsl Errors=_errors />
+                    <TimeSpanBox For=@nameof(_edit.SmtpTimeout) Label=@_t.SmtpTimeout @bind-Value=_edit.SmtpTimeout Required
+                    Errors=_errors />
+                    <TextBox For=@nameof(_edit.SmtpUser) Label=@_t.SmtpUser @bind-Value=_edit.SmtpUser Errors=_errors />
+                    <TextBox For=@nameof(_edit.SmtpPassword) Type="password" Label=@_t.SmtpPassword
+                    AutoComplete="new-password" @bind-Value=_edit.SmtpPassword Errors=_errors />
+                </div>
+                <div class="card-body">
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder=@_t.SmtpTestEmailAddress @bind=TestEmail>
+                        <button class="btn btn-info" type="button" title=@_t.SmtpTestSend @onclick=SendTestEmail>
+                            <i class="bi bi-envelope"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 mt-2 text-end">
+            <button type="submit" class="btn btn-success">@_t.SaveChanges</button>
+            @* <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button> *@
+        </div>
+    </form>
+}

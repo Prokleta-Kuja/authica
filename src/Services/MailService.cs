@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using authica.Entities;
+using authica.Models;
 using authica.Translations;
 using Microsoft.Extensions.Logging;
 
@@ -58,12 +59,28 @@ namespace authica.Services
 
             return message;
         }
+        public async Task SendTestEmailAsync(string testEmail, SettingsEditModel testSettings, CancellationToken cancellationToken = default)
+        {
+            var from = new MailAddress(testSettings.SmtpFromAddress!, testSettings.SmtpFromName);
+            var to = new MailAddress(testEmail);
+            var subject = _t.TestSubject;
+            var body = _t.TestBody;
+            var message = GetStandardMessage(from, to, subject, body);
+
+            using var client = new SmtpClient(testSettings.SmtpHost, testSettings.SmtpPort!.Value);
+            client.Timeout = (int)testSettings.SmtpTimeout!.Value.TotalMilliseconds;
+            client.EnableSsl = testSettings.SmtpSsl;
+
+            if (!string.IsNullOrWhiteSpace(testSettings.SmtpUser) && !string.IsNullOrWhiteSpace(testSettings.SmtpPassword))
+                client.Credentials = new NetworkCredential(testSettings.SmtpUser, testSettings.SmtpPassword);
+
+            await client.SendMailAsync(message, cancellationToken);
+        }
         public async Task SendPasswordResetAsync(User user, Guid token, CancellationToken cancellationToken = default)
         {
             var resetLink = $"{C.Configuration.Current.HostName}{C.Routes.ResetPassword}/{token}";
             var from = new MailAddress(C.Configuration.Current.SmtpFromAddress, C.Configuration.Current.SmtpFromName);
             var to = new MailAddress(user.Email, $"{user.FirstName} {user.LastName}");
-            // TODO: localize
             var subject = _t.ResetPasswordSubject;
             var body = _t.ResetPasswordBody(resetLink);
             var message = GetStandardMessage(from, to, subject, body);

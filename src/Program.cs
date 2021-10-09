@@ -16,7 +16,7 @@ namespace authica
         {
             InitializeDirectories();
             await InitializeDb(args);
-            C.Configuration.Load();
+            await C.Configuration.LoadAsync();
             CreateHostBuilder(args).Build().Run();
         }
         public static IHostBuilder CreateHostBuilder(string[] args) =>
