@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using authica.Services;
 using authica.Translations;
 
 namespace authica.Models
@@ -26,6 +28,9 @@ namespace authica.Models
         public string? SmtpFromAddress { get; set; }
         public string? SmtpSubjectPrefix { get; set; }
         public string? Key { get; set; }
+
+        public bool IsGeoBlockSetup => !string.IsNullOrWhiteSpace(MaxMindLicenseKey)
+            && File.Exists(C.Paths.AppDataFor(IpSecurity.DbFileName));
 
         public bool IsMailSetup => SmtpPort.HasValue
             && !string.IsNullOrWhiteSpace(SmtpHost)

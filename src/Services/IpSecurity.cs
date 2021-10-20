@@ -40,7 +40,8 @@ namespace authica.Services
     }
     public class IpSecurity
     {
-        readonly FileInfo _dbFile;
+        public const string DbFileName = "GeoLite2-Country.mmdb";
+        public readonly FileInfo DbFile;
         readonly ILogger<IpSecurity> _logger;
         readonly IHttpClientFactory _httpClientFactory;
         readonly IMemoryCache _cache;
@@ -53,7 +54,7 @@ namespace authica.Services
             _logger = logger;
             _httpClientFactory = httpClientFactory;
             _cache = memoryCache;
-            _dbFile = new(C.Paths.AppDataFor("GeoLite2-Country.mmdb"));
+            DbFile = new(C.Paths.AppDataFor(DbFileName));
             ipAddress = httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
         }
         string BanKey => $"Banned_{ipAddress}";
@@ -87,10 +88,10 @@ namespace authica.Services
             if (C.Configuration.Current.AllowedCountryCodes.Any())
             {
                 // Do not download db on signin/reset request
-                if (!_dbFile.Exists)
+                if (!DbFile.Exists)
                     return true;
 
-                using var reader = new DatabaseReader(_dbFile.FullName);
+                using var reader = new DatabaseReader(DbFile.FullName);
                 if (reader.TryCountry(ipAddress, out var response))
                 {
                     var allowed = C.Configuration.Current.AllowedCountryCodes.Contains(response?.Country?.IsoCode ?? string.Empty);
@@ -104,15 +105,24 @@ namespace authica.Services
 
             return true;
         }
-        public async ValueTask DownloadDb()
+        public async ValueTask<bool> DownloadDb(string? licenseKeyOverride = null)
         {
             try
             {
                 _logger.LogInformation("Downloading MaxMind db");
 
-                var licenceKey = C.Configuration.Current.MaxMindLicenseKey;
+                var licenceKey = string.IsNullOrWhiteSpace(licenseKeyOverride)
+                    ? C.Configuration.Current.MaxMindLicenseKey
+                    : licenseKeyOverride;
+
                 using var client = _httpClientFactory.CreateClient();
                 var response = await client.GetAsync($"https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key={licenceKey}&suffix=tar.gz");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogError("Could not download MaxMind geolocation database");
+                    return false;
+                }
 
                 using var input = response.Content.ReadAsStream();
                 using var gzip = new GZipStream(input, CompressionMode.Decompress);
@@ -131,7 +141,7 @@ namespace authica.Services
                     if (string.IsNullOrWhiteSpace(name)) // End of file
                         break;
 
-                    if (Path.GetFileName(name) != Path.GetFileName(_dbFile.FullName))
+                    if (Path.GetFileName(name) != Path.GetFileName(DbFile.FullName))
                     {
                         decopmressed.Seek(24, SeekOrigin.Current);
                         decopmressed.Read(buffer, 0, 12);
@@ -155,12 +165,13 @@ namespace authica.Services
 
                         decopmressed.Seek(376L, SeekOrigin.Current);
 
-                        using var dbStream = _dbFile.Create();
+                        DbFile.Delete();
+                        using var dbStream = DbFile.Create();
                         var buf = new byte[size];
                         decopmressed.Read(buf, 0, buf.Length);
                         dbStream.Write(buf, 0, buf.Length);
 
-                        break;
+                        return true;
                     }
                 }
             }
@@ -168,6 +179,8 @@ namespace authica.Services
             {
                 _logger.LogError(ex, "Error while downloading maxmind");
             }
+
+            return false;
         }
     }
 }

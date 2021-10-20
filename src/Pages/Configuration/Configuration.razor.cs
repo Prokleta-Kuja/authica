@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using authica.Entities;
 using authica.Models;
@@ -16,9 +17,12 @@ namespace authica.Pages.Configuration
         [Inject] private ILogger<Configuration> Logger { get; set; } = null!;
         [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
         [Inject] private MailService Mail { get; set; } = null!;
+        [Inject] private IpSecurity IpSec { get; set; } = null!;
         private AppDbContext _db = null!;
         private Settings? _item;
         private SettingsEditModel? _edit;
+        private string? _newCountryCode;
+        private bool _invalidCountryCode;
         private Dictionary<string, string>? _errors;
         private readonly IConfiguration _t = LocalizationFactory.Configuration();
         private string? TestEmail;
@@ -37,6 +41,14 @@ namespace authica.Pages.Configuration
             StateHasChanged();
         }
 
+        string LastGeoDownload()
+        {
+            if (IpSec.DbFile.Exists)
+                return IpSec.DbFile.CreationTimeUtc.ToString();//localize
+            else
+                return _t.MaxMindNotDownloaded;
+
+        }
         async Task Save()
         {
             if (_edit == null || _item == null)
@@ -66,6 +78,45 @@ namespace authica.Pages.Configuration
                 Logger.LogDebug(ex, "Send test email error");
                 // TODO: notification
             }
+        }
+        public void AddCountryCode()
+        {
+            _invalidCountryCode = false;
+            if (string.IsNullOrWhiteSpace(_newCountryCode))
+                return;
+
+            try
+            {
+                var info = new RegionInfo(_newCountryCode);
+                _edit!.AllowedCountryCodes.Add(_newCountryCode.ToUpper());
+                _newCountryCode = null;
+            }
+            catch (ArgumentException)
+            {
+                _invalidCountryCode = true;
+            }
+
+            StateHasChanged();
+        }
+        public void RemoveCountryCode(string code) => _edit!.AllowedCountryCodes.Remove(code);
+        public async Task DownloadDb()
+        {
+            if (!string.IsNullOrWhiteSpace(_edit!.MaxMindLicenseKey))
+            {
+                // TODO: notification
+                return;
+            }
+            var ok = await IpSec.DownloadDb(_edit.MaxMindLicenseKey);
+            if (ok)
+            {
+                // TODO: notification
+            }
+            else
+            {
+                // TODO: Notification
+            }
+
+            StateHasChanged();
         }
     }
 }

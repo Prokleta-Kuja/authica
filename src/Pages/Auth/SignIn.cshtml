@@ -15,7 +15,7 @@
                     <form method="post">
                         <div class="mb-3">
                             <label for="username" class="form-label">@Model.T.UsernameEmail</label>
-                            <input type="text"
+                            <input type="text" autofocus
                                 class="form-control @(Model.Errors.ContainsKey(nameof(Model.Username)) ? "is-invalid" : string.Empty)"
                                 id="username" name=@nameof(Model.Username)>
                             @if (Model.Errors.ContainsKey(nameof(Model.Username)))
