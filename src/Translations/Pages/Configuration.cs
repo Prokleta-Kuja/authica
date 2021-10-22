@@ -6,9 +6,9 @@ namespace authica.Translations
         string GeoSection { get; }
         string SmtpSection { get; }
 
-        string Name { get; }
-        string HostName { get; }
+        string Issuer { get; }
         string Domain { get; }
+        string HostName { get; }
         string MaxSessionDuration { get; }
         string MaxInfractions { get; }
         string InfractionExpiration { get; }
@@ -43,7 +43,7 @@ namespace authica.Translations
         public string GeoSection => "Geo blocking";
         public string SmtpSection => "SMTP";
 
-        public string Name => "Name";
+        public string Issuer => "Issuer";
         public string HostName => "Url";
         public string Domain => "Domain";
         public string MaxSessionDuration => "Session duration";
@@ -80,7 +80,7 @@ namespace authica.Translations
         public string GeoSection => "Geo blokiranje";
         public string SmtpSection => "SMTP";
 
-        public string Name => "Naziv";
+        public string Issuer => "Izdavač";
         public string HostName => "Url";
         public string Domain => "Domena";
         public string MaxSessionDuration => "Duljina sesije";

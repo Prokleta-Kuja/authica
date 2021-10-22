@@ -61,6 +61,9 @@ namespace authica.Pages.Configuration
             _item = _edit.Convert();
 
             await C.Configuration.SaveToDiskAsync(_item);
+            await C.Configuration.LoadFromDiskAsync();
+
+            // TODO: notify to restart if necessary, Issuer & Session duration change
         }
 
         async Task SendTestEmail()

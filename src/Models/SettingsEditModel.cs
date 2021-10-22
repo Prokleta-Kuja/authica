@@ -9,9 +9,9 @@ namespace authica.Models
 {
     public class SettingsEditModel
     {
-        public string? Name { get; set; }
-        public string? HostName { get; set; }
+        public string? Issuer { get; set; }
         public string? Domain { get; set; }
+        public string? HostName { get; set; }
         public int? MaxInfractions { get; set; }
         public TimeSpan? InfractionExpiration { get; set; }
         public TimeSpan? BanTime { get; set; }
@@ -40,9 +40,9 @@ namespace authica.Models
 
         public SettingsEditModel(Settings s)
         {
-            Name = s.Name;
-            HostName = s.HostName;
+            Issuer = s.Issuer;
             Domain = s.Domain;
+            HostName = s.HostName;
             MaxInfractions = s.MaxInfractions;
             InfractionExpiration = s.InfractionExpiration;
             BanTime = s.BanTime;
@@ -58,14 +58,15 @@ namespace authica.Models
             SmtpFromName = s.SmtpFromName;
             SmtpFromAddress = s.SmtpFromAddress;
             SmtpSubjectPrefix = s.SmtpSubjectPrefix;
+            Key = s.Key;
         }
 
         public Settings Convert()
         {
             var s = new Settings();
-            s.Name = Name!;
-            s.HostName = HostName!;
+            s.Issuer = Issuer!;
             s.Domain = Domain!;
+            s.HostName = HostName!;
             s.MaxInfractions = MaxInfractions!.Value;
             s.InfractionExpiration = InfractionExpiration!.Value;
             s.BanTime = BanTime!.Value;
@@ -81,6 +82,7 @@ namespace authica.Models
             s.SmtpFromName = SmtpFromName!;
             s.SmtpFromAddress = SmtpFromAddress!;
             s.SmtpSubjectPrefix = SmtpSubjectPrefix!;
+            s.Key = Key;
 
             return s;
         }
@@ -88,14 +90,14 @@ namespace authica.Models
         {
             var errors = new Dictionary<string, string>();
 
-            if (string.IsNullOrWhiteSpace(Name))
-                errors.Add(nameof(Name), translation.ValidationRequired);
-
-            if (string.IsNullOrWhiteSpace(HostName))
-                errors.Add(nameof(HostName), translation.ValidationRequired);
+            if (string.IsNullOrWhiteSpace(Issuer))
+                errors.Add(nameof(Issuer), translation.ValidationRequired);
 
             if (string.IsNullOrWhiteSpace(Domain))
                 errors.Add(nameof(Domain), translation.ValidationRequired);
+
+            if (string.IsNullOrWhiteSpace(HostName))
+                errors.Add(nameof(HostName), translation.ValidationRequired);
 
             if (!MaxInfractions.HasValue)
                 errors.Add(nameof(MaxInfractions), translation.ValidationRequired);
@@ -110,9 +112,6 @@ namespace authica.Models
 
             if (!MaxSessionDuration.HasValue)
                 errors.Add(nameof(MaxSessionDuration), translation.ValidationRequired);
-
-            // TODO:
-            //    s.AllowedCountryCodes = AllowedCountryCodes;
 
             if (SmtpPort.HasValue && (SmtpPort.Value <= 0 || SmtpPort.Value > UInt16.MaxValue))
                 errors.Add(nameof(SmtpPort), translation.ValidationInvalid);
