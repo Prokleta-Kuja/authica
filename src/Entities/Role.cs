@@ -19,7 +19,7 @@ namespace authica.Entities
         public string Name { get; set; }
         public DateTime? Disabled { get; set; }
 
-        public ICollection<UserRole>? UserRoles { get; set; }
-        public ICollection<AppRole>? AppRoles { get; set; }
+        public virtual ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
+        public virtual ICollection<AppRole> AppRoles { get; set; } = new HashSet<AppRole>();
     }
 }

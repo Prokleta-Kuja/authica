@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/bin/Debug/net5.0/authica.dll",
+            "program": "${workspaceFolder}/src/bin/Debug/net6.0/authica.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src",
             "stopAtEntry": false,
@@ -21,6 +21,7 @@
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
+            "requireExactSource": false,
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
             }

@@ -43,7 +43,7 @@ namespace authica.Entities
         public DateTime? Disabled { get; set; }
         public DateTime? LastLogin { get; set; }
 
-        public ICollection<UserRole>? UserRoles { get; set; }
+        public virtual ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
 
         public User SetPassword(string newPassword, IPasswordHasher hasher)
         {

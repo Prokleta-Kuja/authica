@@ -36,6 +36,14 @@ namespace authica.Translations
         string SmtpSubjectPrefix { get; }
         string SmtpTestEmailAddress { get; }
         string SmtpTestSend { get; }
+
+        string ToastRestartMessage { get; }
+        string ToastRestartAction { get; }
+        string ToastMailOk { get; }
+        string ToastMailNok { get; }
+        string ToastNoLicenseKey { get; }
+        string ToastDownloadOk { get; }
+        string ToastDownloadNok { get; }
     }
     public class Configuration_en : Standard_en, IConfiguration
     {
@@ -73,6 +81,14 @@ namespace authica.Translations
         public string SmtpSubjectPrefix => "Subject prefix";
         public string SmtpTestEmailAddress => "Test email address";
         public string SmtpTestSend => "Send test email";
+
+        public string ToastRestartMessage => "Changes has been saved but app must be restarted before they can be applied.";
+        public string ToastRestartAction => "Restart";
+        public string ToastMailOk => "Test email has been sent.";
+        public string ToastMailNok => "Failed to send test email.";
+        public string ToastNoLicenseKey => "No license key entered.";
+        public string ToastDownloadOk => "Geolocation database downloaded.";
+        public string ToastDownloadNok => "Could not download geolocation database.";
     }
     public class Configuration_hr : Standard_hr, IConfiguration
     {
@@ -110,5 +126,13 @@ namespace authica.Translations
         public string SmtpSubjectPrefix => "Prefiks naslova";
         public string SmtpTestEmailAddress => "Test email adresa";
         public string SmtpTestSend => "Pošalji testni email";
+
+        public string ToastRestartMessage => "Izmjene su spremljene ali se app mora ponovno pokrenuti kako bi se izmjene primijenile.";
+        public string ToastRestartAction => "Ponovno pokreni";
+        public string ToastMailOk => "Testni email je poslan.";
+        public string ToastMailNok => "Testni email nije poslan.";
+        public string ToastNoLicenseKey => "Licenčni ključ nije unesen.";
+        public string ToastDownloadOk => "Geolokacijska baza preuzeta.";
+        public string ToastDownloadNok => "Geolokacijska baza nije preuzeta.";
     }
 }

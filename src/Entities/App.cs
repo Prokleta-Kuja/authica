@@ -27,6 +27,6 @@ namespace authica.Entities
         public DateTime Created { get; set; }
         public DateTime? Disabled { get; set; }
 
-        public ICollection<AppRole>? AppRoles { get; set; }
+        public virtual ICollection<AppRole> AppRoles { get; set; } = new HashSet<AppRole>();
     }
 }

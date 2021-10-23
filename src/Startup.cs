@@ -72,6 +72,7 @@ namespace authica
             services.AddDataProtection().PersistKeysToDbContext<AppDbContext>();
             services.AddSingleton<IPasswordHasher, PasswordHashingService>();
             services.AddSingleton<MailService>();
+            services.AddScoped<ToastService>();
             services.AddHttpClient();
             services.AddHttpContextAccessor();
             services.AddScoped<IpSecurity>();

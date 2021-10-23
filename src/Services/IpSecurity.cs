@@ -111,9 +111,15 @@ namespace authica.Services
             {
                 _logger.LogInformation("Downloading MaxMind db");
 
-                var licenceKey = string.IsNullOrWhiteSpace(licenseKeyOverride)
+                var licenceKey = licenseKeyOverride == null
                     ? C.Configuration.Current.MaxMindLicenseKey
                     : licenseKeyOverride;
+
+                if (string.IsNullOrWhiteSpace(licenceKey))
+                {
+                    _logger.LogError("Can not download MaxMind geolocation database without license key");
+                    return false;
+                }
 
                 using var client = _httpClientFactory.CreateClient();
                 var response = await client.GetAsync($"https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key={licenceKey}&suffix=tar.gz");

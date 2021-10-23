@@ -8,6 +8,7 @@ using authica.Services;
 using authica.Translations;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace authica.Pages.Configuration
@@ -18,6 +19,8 @@ namespace authica.Pages.Configuration
         [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
         [Inject] private MailService Mail { get; set; } = null!;
         [Inject] private IpSecurity IpSec { get; set; } = null!;
+        [Inject] private ToastService ToastService { get; set; } = null!;
+        [Inject] private IHostApplicationLifetime AppLifetime { get; set; } = null!;
         private AppDbContext _db = null!;
         private Settings? _item;
         private SettingsEditModel? _edit;
@@ -58,12 +61,23 @@ namespace authica.Pages.Configuration
             if (_errors != null)
                 return;
 
+            var shouldRestart = _item.Issuer != _edit.Issuer
+                || _item.Domain != _edit.Domain
+                || _item.MaxSessionDuration != _edit.MaxSessionDuration;
+
             _item = _edit.Convert();
 
             await C.Configuration.SaveToDiskAsync(_item);
-            await C.Configuration.LoadFromDiskAsync();
 
-            // TODO: notify to restart if necessary, Issuer & Session duration change
+            if (shouldRestart)
+                ToastService.ShowWarning(_t.ToastRestartMessage, _t.ToastRestartAction, ShutDown);
+            else
+                await C.Configuration.LoadFromDiskAsync();
+        }
+
+        void ShutDown()
+        {
+            //TODO: redirect to shutdown page
         }
 
         async Task SendTestEmail()
@@ -74,12 +88,12 @@ namespace authica.Pages.Configuration
             try
             {
                 await Mail.SendTestEmailAsync(TestEmail, _edit);
-                // TODO: Notification
+                ToastService.ShowSuccess(_t.ToastMailOk);
             }
             catch (Exception ex)
             {
                 Logger.LogDebug(ex, "Send test email error");
-                // TODO: notification
+                ToastService.ShowError(_t.ToastMailNok);
             }
         }
         public void AddCountryCode()
@@ -106,18 +120,14 @@ namespace authica.Pages.Configuration
         {
             if (!string.IsNullOrWhiteSpace(_edit!.MaxMindLicenseKey))
             {
-                // TODO: notification
+                ToastService.ShowError(_t.ToastNoLicenseKey);
                 return;
             }
             var ok = await IpSec.DownloadDb(_edit.MaxMindLicenseKey);
             if (ok)
-            {
-                // TODO: notification
-            }
+                ToastService.ShowSuccess(_t.ToastDownloadOk);
             else
-            {
-                // TODO: Notification
-            }
+                ToastService.ShowError(_t.ToastDownloadNok);
 
             StateHasChanged();
         }
