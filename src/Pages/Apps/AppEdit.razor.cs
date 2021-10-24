@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using authica.Auth;
 using authica.Entities;
 using authica.Models;
 using authica.Services;
@@ -14,6 +15,7 @@ namespace authica.Pages.Apps
 {
     public partial class AppEdit : IDisposable
     {
+        [Inject] public CurrentSession Session { get; set; } = null!;
         [Inject] private IJSRuntime JS { get; set; } = null!;
         [Inject] private NavigationManager Nav { get; set; } = null!;
         [Inject] private IPasswordHasher Hasher { get; set; } = null!;
@@ -28,9 +30,16 @@ namespace authica.Pages.Apps
         private Dictionary<Guid, Role> _appRoles = new();
         private Dictionary<Guid, Role> _allRoles = new();
         private Dictionary<string, string>? _errors;
-        private readonly IApps _t = LocalizationFactory.Apps();
+        private IApps _t = LocalizationFactory.Apps();
 
-        protected override void OnInitialized() { _db = DbFactory.CreateDbContext(); base.OnInitialized(); }
+        protected override void OnInitialized()
+        {
+            if (Session.IsAuthenticated)
+                _t = LocalizationFactory.Apps(Session.LocaleId);
+            _db = DbFactory.CreateDbContext();
+
+            base.OnInitialized();
+        }
         public void Dispose() => _db?.Dispose();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)

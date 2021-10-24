@@ -1,4 +1,4 @@
-namespace authica
+namespace authica.Auth
 {
     ///<Summary>
     /// Claim names from <a href="https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims">OpenId Connect specification</a>.
@@ -77,5 +77,8 @@ namespace authica
         /// Time the End-User's information was last updated. Its value is a JSON number representing the number of seconds from 1970-01-01T0:0:0Z as measured in UTC until the date/time. 
         /// </summary>
         public const string UpdatedAt = "updated_at";
+
+        // Custom
+        public const string IsAdmin = "is_admin";
     }
 }

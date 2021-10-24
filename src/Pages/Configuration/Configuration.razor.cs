@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using authica.Auth;
 using authica.Entities;
 using authica.Models;
 using authica.Services;
@@ -15,6 +16,7 @@ namespace authica.Pages.Configuration
 {
     public partial class Configuration : IDisposable
     {
+        [Inject] public CurrentSession Session { get; set; } = null!;
         [Inject] private ILogger<Configuration> Logger { get; set; } = null!;
         [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
         [Inject] private MailService Mail { get; set; } = null!;
@@ -27,10 +29,21 @@ namespace authica.Pages.Configuration
         private string? _newCountryCode;
         private bool _invalidCountryCode;
         private Dictionary<string, string>? _errors;
-        private readonly IConfiguration _t = LocalizationFactory.Configuration();
+        private IConfiguration _t = LocalizationFactory.Configuration();
+        private Formats _f = LocalizationFactory.Formats();
         private string? TestEmail;
 
-        protected override void OnInitialized() { _db = DbFactory.CreateDbContext(); base.OnInitialized(); }
+        protected override void OnInitialized()
+        {
+            if (Session.IsAuthenticated)
+            {
+                _t = LocalizationFactory.Configuration(Session.LocaleId);
+                _f = LocalizationFactory.Formats(Session.LocaleId, Session.TimeZoneId);
+            }
+            _db = DbFactory.CreateDbContext();
+
+            base.OnInitialized();
+        }
         public void Dispose() => _db?.Dispose();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -47,7 +60,7 @@ namespace authica.Pages.Configuration
         string LastGeoDownload()
         {
             if (IpSec.DbFile.Exists)
-                return IpSec.DbFile.CreationTimeUtc.ToString();//localize
+                return _f.Display(IpSec.DbFile.CreationTimeUtc);
             else
                 return _t.MaxMindNotDownloaded;
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using authica.Auth;
 using authica.Entities;
 using authica.Models;
 using authica.Services;
@@ -14,6 +15,7 @@ namespace authica.Pages.Users
 {
     public partial class UserEdit : IDisposable
     {
+        [Inject] public CurrentSession Session { get; set; } = null!;
         [Inject] private IJSRuntime JS { get; set; } = null!;
         [Inject] private NavigationManager Nav { get; set; } = null!;
         [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
@@ -29,9 +31,16 @@ namespace authica.Pages.Users
         private Dictionary<Guid, Role> _userRoles = new();
         private Dictionary<Guid, Role> _allRoles = new();
         private Dictionary<string, string>? _errors;
-        private readonly IUsers _t = LocalizationFactory.Users();
+        private IUsers _t = LocalizationFactory.Users();
 
-        protected override void OnInitialized() { _db = DbFactory.CreateDbContext(); base.OnInitialized(); }
+        protected override void OnInitialized()
+        {
+            if (Session.IsAuthenticated)
+                _t = LocalizationFactory.Users(Session.LocaleId);
+            _db = DbFactory.CreateDbContext();
+
+            base.OnInitialized();
+        }
         public void Dispose() => _db?.Dispose();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)

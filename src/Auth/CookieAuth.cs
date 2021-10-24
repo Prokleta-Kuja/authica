@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace authica
+namespace authica.Auth
 {
     public static class CookieAuth
     {
@@ -69,7 +69,10 @@ namespace authica
             if (user.UserRoles!.Any())
                 claims.AddRange(user.UserRoles!.Select(ur => new Claim(ClaimTypes.Role, ur.Role!.Name)));
 
-            var identity = new ClaimsIdentity(claims, "Basic");
+            if (user.IsAdmin)
+                claims.Add(new(Claims.IsAdmin, user.IsAdmin.ToString()));
+
+            var identity = new ClaimsIdentity(claims, "ApplicationCookie");
             return identity;
         }
         public class MemoryCacheTicketStore : ITicketStore

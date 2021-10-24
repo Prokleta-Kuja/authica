@@ -22,6 +22,7 @@ namespace authica
             public const string SignOut = "/sign-out";
             public const string ResetPassword = "/reset-password";
             public const string Forbidden = "/forbidden";
+            public const string MyProfile = "/my-profile";
             public const string Apps = "/apps";
             public const string App = "/apps/{AliasId:guid}";
             public static string AppsFor(Guid aliasId) => $"{Apps}/{aliasId}";

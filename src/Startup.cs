@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using authica.Auth;
 using authica.Entities;
 using authica.Jobs;
 using authica.Services;
@@ -59,15 +60,6 @@ namespace authica
                     builder.LogTo(message => Debug.WriteLine(message), new[] { RelationalEventId.CommandExecuted });
                 }
             });
-            services.AddDbContext<AppDbContext>(builder =>
-            {
-                builder.UseSqlite(C.Paths.AppDbConnectionString);
-                if (Debugger.IsAttached)
-                {
-                    builder.EnableSensitiveDataLogging();
-                    builder.LogTo(message => Debug.WriteLine(message), new[] { RelationalEventId.CommandExecuted });
-                }
-            });
 
             services.AddDataProtection().PersistKeysToDbContext<AppDbContext>();
             services.AddSingleton<IPasswordHasher, PasswordHashingService>();
@@ -76,6 +68,7 @@ namespace authica
             services.AddHttpClient();
             services.AddHttpContextAccessor();
             services.AddScoped<IpSecurity>();
+            services.AddCurrentSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

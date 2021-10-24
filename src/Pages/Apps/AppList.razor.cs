@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using authica.Auth;
 using authica.Entities;
 using authica.Translations;
 using Microsoft.AspNetCore.Components;
@@ -7,20 +9,34 @@ using Microsoft.EntityFrameworkCore;
 
 namespace authica.Pages.Apps
 {
-    public partial class AppList
+    public partial class AppList : IDisposable
     {
-        [Inject] private AppDbContext Db { get; set; } = null!;
+        [Inject] public CurrentSession Session { get; set; } = null!;
+        [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
 
+        private AppDbContext _db = null!;
         private List<Entities.App> _apps = new();
-        private readonly IApps _t = LocalizationFactory.Apps();
-        private readonly Formats _f = LocalizationFactory.Formats();
+        private IApps _t = LocalizationFactory.Apps();
+        private Formats _f = LocalizationFactory.Formats();
 
+        protected override void OnInitialized()
+        {
+            if (Session.IsAuthenticated)
+            {
+                _t = LocalizationFactory.Apps(Session.LocaleId);
+                _f = LocalizationFactory.Formats(Session.LocaleId, Session.TimeZoneId);
+            }
+            _db = DbFactory.CreateDbContext();
+
+            base.OnInitialized();
+        }
+        public void Dispose() => _db?.Dispose();
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (!firstRender)
                 return;
 
-            _apps = await Db.Apps.ToListAsync();
+            _apps = await _db.Apps.ToListAsync();
             StateHasChanged();
         }
     }
