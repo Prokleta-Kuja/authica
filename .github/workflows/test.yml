@@ -1,0 +1,15 @@
+name: Test
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to tag'
+        required: true
+        default: '0.0.1'
+
+jobs:
+  say_hello:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Hello ${{ github.event.inputs.name }}!"
