@@ -9,12 +9,14 @@ on:
         default: '0.0.1'
 
 jobs:
-
-  build:
-
+  say_hello:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      - run: |
+          echo "Hello ${{ github.event.inputs.version }}!"
+  # build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Build the Docker image
+  #     run: docker build . --file Dockerfile --tag my-image-name:${{ github.event.inputs.version }}
