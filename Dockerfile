@@ -4,7 +4,7 @@ WORKDIR /app
 COPY src/*.csproj ./
 RUN dotnet restore
 
-COPY .src/ .
+COPY ./src .
 WORKDIR /app
 
 ARG Version=0.0.0
