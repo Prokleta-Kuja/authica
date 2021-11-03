@@ -32,11 +32,14 @@ namespace authica.Pages.Apps
         private Dictionary<string, string>? _errors;
         private IApps _t = LocalizationFactory.Apps();
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            if (Session.IsAuthenticated)
+            if (Session.IsAuthenticated && Session.HasClaim(Claims.IsAdmin))
                 _t = LocalizationFactory.Apps(Session.LocaleId);
-            _db = DbFactory.CreateDbContext();
+            else
+                Nav.NavigateTo(C.Routes.Forbidden);
+
+            _db = await DbFactory.CreateDbContextAsync();
 
             base.OnInitialized();
         }

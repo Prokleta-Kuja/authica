@@ -35,11 +35,14 @@ namespace authica.Pages.Roles
         private Dictionary<string, string>? _errors;
         private IRoles _t = LocalizationFactory.Roles();
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            if (Session.IsAuthenticated)
+            if (Session.IsAuthenticated && Session.HasClaim(Claims.IsAdmin))
                 _t = LocalizationFactory.Roles(Session.LocaleId);
-            _db = DbFactory.CreateDbContext();
+            else
+                Nav.NavigateTo(C.Routes.Forbidden);
+
+            _db = await DbFactory.CreateDbContextAsync();
 
             base.OnInitialized();
         }

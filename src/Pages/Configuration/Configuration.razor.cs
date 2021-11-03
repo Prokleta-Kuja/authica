@@ -23,6 +23,7 @@ namespace authica.Pages.Configuration
         [Inject] private IpSecurity IpSec { get; set; } = null!;
         [Inject] private ToastService ToastService { get; set; } = null!;
         [Inject] private IHostApplicationLifetime AppLifetime { get; set; } = null!;
+        [Inject] private NavigationManager Nav { get; set; } = null!;
         private AppDbContext _db = null!;
         private Settings? _item;
         private SettingsEditModel? _edit;
@@ -33,14 +34,17 @@ namespace authica.Pages.Configuration
         private Formats _f = LocalizationFactory.Formats();
         private string? TestEmail;
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            if (Session.IsAuthenticated)
+            if (Session.IsAuthenticated && Session.HasClaim(Claims.IsAdmin))
             {
                 _t = LocalizationFactory.Configuration(Session.LocaleId);
                 _f = LocalizationFactory.Formats(Session.LocaleId, Session.TimeZoneId);
             }
-            _db = DbFactory.CreateDbContext();
+            else
+                Nav.NavigateTo(C.Routes.Forbidden);
+
+            _db = await DbFactory.CreateDbContextAsync();
 
             base.OnInitialized();
         }
