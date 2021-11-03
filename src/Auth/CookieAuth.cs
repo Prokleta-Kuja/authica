@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using authica.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace authica.Auth
 {
@@ -24,7 +22,7 @@ namespace authica.Auth
             o.Cookie.SameSite = SameSiteMode.Lax;
             o.Cookie.MaxAge = C.Configuration.Current.MaxSessionDuration;
 
-            o.SessionStore = new MemoryCacheTicketStore();
+            o.SessionStore = new InMemoryTicketStore();
             o.ClaimsIssuer = C.Configuration.Current.Issuer;
             o.LoginPath = C.Routes.SignIn;
             o.LogoutPath = C.Routes.SignOut;
@@ -42,6 +40,7 @@ namespace authica.Auth
         {
             var claims = new List<Claim>
                 {
+                    new(Claims.SessionId, Guid.NewGuid().ToString()),
                     new(Claims.Subject, user.AliasId.ToString()),
                     new(Claims.UserName, user.UserName),
                     new(Claims.Email, user.Email),
@@ -74,51 +73,6 @@ namespace authica.Auth
 
             var identity = new ClaimsIdentity(claims, "ApplicationCookie");
             return identity;
-        }
-        public class MemoryCacheTicketStore : ITicketStore
-        {
-            private const string KeyPrefix = "AuthSessionStore-";
-            private IMemoryCache _cache;
-
-            public MemoryCacheTicketStore()
-            {
-                _cache = new MemoryCache(new MemoryCacheOptions());
-            }
-
-            public async Task<string> StoreAsync(AuthenticationTicket ticket)
-            {
-                var guid = Guid.NewGuid();
-                var key = KeyPrefix + guid.ToString();
-                await RenewAsync(key, ticket);
-
-                return key;
-            }
-
-            public Task RenewAsync(string key, AuthenticationTicket ticket)
-            {
-                var options = new MemoryCacheEntryOptions();
-                var expiresUtc = ticket.Properties.ExpiresUtc;
-                if (expiresUtc.HasValue)
-                {
-                    options.SetAbsoluteExpiration(expiresUtc.Value);
-                }
-
-                _cache.Set(key, ticket, options);
-
-                return Task.CompletedTask;
-            }
-
-            public Task<AuthenticationTicket?> RetrieveAsync(string key)
-            {
-                _cache.TryGetValue(key, out AuthenticationTicket? ticket);
-                return Task.FromResult(ticket);
-            }
-
-            public Task RemoveAsync(string key)
-            {
-                _cache.Remove(key);
-                return Task.CompletedTask;
-            }
         }
     }
 }

@@ -80,5 +80,6 @@ namespace authica.Auth
 
         // Custom
         public const string IsAdmin = "is_admin";
+        public const string SessionId = "session_id";
     }
 }

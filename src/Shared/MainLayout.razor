@@ -1,4 +1,9 @@
-﻿@inherits LayoutComponentBase
+﻿@using Auth
+@inherits LayoutComponentBase
+@implements IDisposable
+
+@inject NavigationManager Nav
+@inject CurrentSession Session
 
 <NavMenu />
 
@@ -7,3 +12,22 @@
 </main>
 
 <ToastContainer />
+
+@code {
+    string? sessionId;
+    protected override void OnInitialized()
+    {
+        Nav.LocationChanged += OnLocationChanged;
+        sessionId = Session.GetClaimValue(Claims.SessionId);
+    }
+    void OnLocationChanged(object? sender, LocationChangedEventArgs args)
+    {
+        if (!InMemoryTicketStore.SessionActive(sessionId))
+            Nav.NavigateTo(C.Routes.SignIn);
+    }
+    public void Dispose()
+    {
+        if (Nav != null)
+            Nav.LocationChanged -= OnLocationChanged;
+    }
+}
