@@ -37,10 +37,12 @@ namespace authica.Pages.Roles
 
         protected override async Task OnInitializedAsync()
         {
-            if (Session.IsAuthenticated && Session.HasClaim(Claims.IsAdmin))
-                _t = LocalizationFactory.Roles(Session.LocaleId);
-            else
+            if (!Session.IsAuthenticated)
+                Nav.NavigateTo(C.Routes.SignIn, true);
+            else if (!Session.HasClaim(Claims.IsAdmin))
                 Nav.NavigateTo(C.Routes.Forbidden);
+            else
+                _t = LocalizationFactory.Roles(Session.LocaleId);
 
             _db = await DbFactory.CreateDbContextAsync();
 

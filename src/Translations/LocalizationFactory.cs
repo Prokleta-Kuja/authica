@@ -80,6 +80,14 @@ namespace authica.Translations
 
             return new Configuration_en();
         }
+        public static IMyProfile MyProfile() => MyProfile(C.Env.Locale);
+        public static IMyProfile MyProfile(string locale)
+        {
+            if (locale.StartsWith("hr"))
+                return new MyProfile_hr();
+
+            return new MyProfile_en();
+        }
 
         // Services
         public static IIpSecurity IpSecurity() => IpSecurity(C.Env.Locale);

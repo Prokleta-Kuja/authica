@@ -22,13 +22,15 @@ namespace authica.Pages.Apps
 
         protected override async Task OnInitializedAsync()
         {
-            if (Session.IsAuthenticated && Session.HasClaim(Claims.IsAdmin))
+            if (!Session.IsAuthenticated)
+                Nav.NavigateTo(C.Routes.SignIn, true);
+            else if (!Session.HasClaim(Claims.IsAdmin))
+                Nav.NavigateTo(C.Routes.Forbidden);
+            else
             {
                 _t = LocalizationFactory.Apps(Session.LocaleId);
                 _f = LocalizationFactory.Formats(Session.LocaleId, Session.TimeZoneId);
             }
-            else
-                Nav.NavigateTo(C.Routes.Forbidden);
 
             _db = await DbFactory.CreateDbContextAsync();
 

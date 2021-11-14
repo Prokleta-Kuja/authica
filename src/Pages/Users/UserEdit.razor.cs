@@ -35,10 +35,12 @@ namespace authica.Pages.Users
 
         protected override async Task OnInitializedAsync()
         {
-            if (Session.IsAuthenticated && Session.HasClaim(Claims.IsAdmin))
-                _t = LocalizationFactory.Users(Session.LocaleId);
-            else
+            if (!Session.IsAuthenticated)
+                Nav.NavigateTo(C.Routes.SignIn, true);
+            else if (!Session.HasClaim(Claims.IsAdmin))
                 Nav.NavigateTo(C.Routes.Forbidden);
+            else
+                _t = LocalizationFactory.Users(Session.LocaleId);
 
             _db = await DbFactory.CreateDbContextAsync();
 

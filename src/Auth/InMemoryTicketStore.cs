@@ -23,13 +23,16 @@ namespace authica.Auth
 
         public Task RenewAsync(string key, AuthenticationTicket ticket)
         {
+            if (!Guid.TryParse(key, out var sessionId))
+                throw new ArgumentException("No session key", nameof(key));
+
             var subject = ticket.Principal.FindFirst(Claims.Subject);
             if (!Guid.TryParse(subject?.Value, out var userAliasId))
                 throw new ArgumentException("No subject claim in ticket", nameof(ticket));
 
             var expiresUtc = ticket.Properties.ExpiresUtc?.UtcDateTime ?? DateTime.UtcNow.Add(C.Configuration.Current.MaxSessionDuration);
 
-            var value = new ApplicationTicket(userAliasId, expiresUtc, ticket);
+            var value = new ApplicationTicket(sessionId, userAliasId, expiresUtc, ticket);
             if (_store.ContainsKey(key))
             {
                 var prev = _store[key];
@@ -82,5 +85,6 @@ namespace authica.Auth
             foreach (var sessionId in sessionIds)
                 _store.Remove(sessionId);
         }
+        public static void RemoveSession(string sessionId) => _store.Remove(sessionId);
     }
 }

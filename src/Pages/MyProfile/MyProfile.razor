@@ -1,0 +1,72 @@
+@attribute [Microsoft.AspNetCore.Components.RouteAttribute(C.Routes.MyProfile)]
+@using Models
+
+@if(_edit != null)
+{
+<div class="row justify-content-center">
+    <div class="col-lg-4 col-md-7 col-sm-9 mt-2">
+        <div class="card">
+            <div class="card-header"> @_edit.Email </div>
+            <div class="card-body py-0">
+                <TextBox For=@nameof(MyProfileEditModel.UserName) Label=@_t.UserName @bind-Value=_edit.UserName Required
+                    AutoFocus Errors=_errors AutoComplete="off" />
+                <TextBox For=@nameof(MyProfileEditModel.FirstName) Label=@_t.FirstName @bind-Value=_edit.FirstName
+                    Errors=_errors />
+                <TextBox For=@nameof(MyProfileEditModel.LastName) Label=@_t.LastName @bind-Value=_edit.LastName
+                    Errors=_errors />
+                <TextBox For=@nameof(MyProfileEditModel.TimeZone) Label=@_t.TimeZone @bind-Value=_edit.TimeZone
+                    Errors=_errors />
+                <TextBox For=@nameof(MyProfileEditModel.Locale) Label=@_t.Locale @bind-Value=_edit.Locale
+                    Errors=_errors />
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-7 col-sm-9 mt-2">
+        <div class="card">
+            <div class="card-header"> @_t.ChangePassword </div>
+            <div class="card-body py-0">
+                <TextBox For=@nameof(MyProfileEditModel.OldPassword) Label=@_t.OldPassword @bind-Value=_edit.OldPassword
+                    Errors=_errors Type="password" />
+                <TextBox For=@nameof(MyProfileEditModel.NewPassword) Label=@_t.NewPassword @bind-Value=_edit.NewPassword
+                    Errors=_errors Type="password" AutoComplete="new-password" />
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-7 col-sm-9 mt-2">
+        <div class="card">
+            <div class="card-header">@_t.Sessions</div>
+            <ul class="list-group list-group-flush">
+                @foreach (var ticket in _tickets)
+                {
+                    <li @key=ticket.SessionId class="list-group-item">
+                        <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">@_f.Display(ticket.Created)</h6>
+                                <h6 class="mb-0">@_f.Display(ticket.ExpiresAt)</h6>
+                            </div>
+                            <button type="button" class="btn btn-outline-danger" disabled=@(Session.SessionId == ticket.SessionId)
+                            @onclick="( () => RemoveSession(ticket.SessionId))">@_t.Remove</button>
+                        </div>
+                    </li>
+                }
+            </ul>
+            @* <div class="card-footer">
+                <div class="input-group">
+                    <select class="form-select" @bind=_selectedRole>
+                        <option value="" selected disabled>@_t.ChooseRole</option>
+                        @foreach (var role in _allRoles)
+                        {
+                            <option value=@role.Key>@role.Value.Name</option>
+                        }
+                    </select>
+                    <button type="button" class="btn btn-success" @onclick=AddRole>@_t.Add</button>
+                </div>
+            </div> *@
+        </div>
+    </div>
+    <div class="col-12 mt-2 text-end">
+        <button type="submit" class="btn btn-success" @onclick=SaveEditClicked>@_t.SaveChanges</button>
+        <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
+    </div>
+</div>
+}

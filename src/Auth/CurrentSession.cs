@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -23,11 +24,19 @@ namespace authica.Auth
             {
                 IdentityClaims = identity.Claims.ToDictionary(k => k.Type, v => v.Value);
 
+                if (TryGetClaimValue(Claims.SessionId, out var session) && Guid.TryParse(session, out var sessionId))
+                    SessionId = sessionId;
+
+                if (TryGetClaimValue(Claims.Subject, out var sub) && Guid.TryParse(sub, out var aliasId))
+                    UserAliasId = aliasId;
+
                 TimeZoneId = GetClaimValue(Claims.TimeZone) ?? C.Env.TimeZone;
                 LocaleId = GetClaimValue(Claims.Locale) ?? C.Env.Locale;
             }
         }
         public bool IsAuthenticated { get; set; }
+        public Guid SessionId { get; set; }
+        public Guid UserAliasId { get; set; }
         public string TimeZoneId { get; set; } = C.Env.TimeZone;
         public string LocaleId { get; set; } = C.Env.Locale;
         public Dictionary<string, string> IdentityClaims { get; set; } = new();
