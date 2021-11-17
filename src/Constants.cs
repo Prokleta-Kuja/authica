@@ -9,6 +9,7 @@ namespace authica
 {
     public static class C
     {
+        public static FileInfo GeoLocationDbFile { get; private set; } = new(C.Paths.AppDataFor("GeoLite2-Country.mmdb"));
         public static class Env
         {
             public static string Locale => Environment.GetEnvironmentVariable("LOCALE") ?? "en-US";
@@ -33,6 +34,8 @@ namespace authica
             public const string Role = "/roles/{AliasId:guid}";
             public static string RolesFor(Guid aliasId) => $"{Roles}/{aliasId}";
             public const string Configuration = "/configuration";
+            public const string Shutdown = "/shutdown";
+            public const string Restart = "/shutdown/restart";
         }
         public static class Paths
         {

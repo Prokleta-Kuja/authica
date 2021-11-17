@@ -88,6 +88,14 @@ namespace authica.Translations
 
             return new MyProfile_en();
         }
+        public static IShutdown Shutdown() => Shutdown(C.Env.Locale);
+        public static IShutdown Shutdown(string locale)
+        {
+            if (locale.StartsWith("hr"))
+                return new Shutdown_hr();
+
+            return new Shutdown_en();
+        }
 
         // Services
         public static IIpSecurity IpSecurity() => IpSecurity(C.Env.Locale);

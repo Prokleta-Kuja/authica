@@ -20,7 +20,7 @@ namespace authica.Pages.Configuration
         [Inject] private ILogger<Configuration> Logger { get; set; } = null!;
         [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
         [Inject] private MailService Mail { get; set; } = null!;
-        [Inject] private IpSecurity IpSec { get; set; } = null!;
+        [Inject] private GeolocationDbDownloadService GeolocationDbDownloadService { get; set; } = null!;
         [Inject] private ToastService ToastService { get; set; } = null!;
         [Inject] private IHostApplicationLifetime AppLifetime { get; set; } = null!;
         [Inject] private NavigationManager Nav { get; set; } = null!;
@@ -65,8 +65,8 @@ namespace authica.Pages.Configuration
 
         string LastGeoDownload()
         {
-            if (IpSec.DbFile.Exists)
-                return _f.Display(IpSec.DbFile.CreationTimeUtc);
+            if (C.GeoLocationDbFile.Exists)
+                return _f.Display(C.GeoLocationDbFile.CreationTimeUtc);
             else
                 return _t.MaxMindNotDownloaded;
 
@@ -89,14 +89,15 @@ namespace authica.Pages.Configuration
             await C.Configuration.SaveToDiskAsync(_item);
 
             if (shouldRestart)
-                ToastService.ShowWarning(_t.ToastRestartMessage, _t.ToastRestartAction, ShutDown);
+                ToastService.ShowWarning(_t.ToastRestartMessage, _t.ToastRestartAction, Restart);
             else
                 await C.Configuration.LoadFromDiskAsync();
         }
 
-        void ShutDown()
+        void Restart()
         {
-            //TODO: redirect to shutdown page
+            Nav.NavigateTo(C.Routes.Restart, true);
+            Program.Shutdown(true);
         }
 
         async Task SendTestEmail()
@@ -137,12 +138,12 @@ namespace authica.Pages.Configuration
         public void RemoveCountryCode(string code) => _edit!.AllowedCountryCodes.Remove(code);
         public async Task DownloadDb()
         {
-            if (!string.IsNullOrWhiteSpace(_edit!.MaxMindLicenseKey))
+            if (string.IsNullOrWhiteSpace(_edit!.MaxMindLicenseKey))
             {
                 ToastService.ShowError(_t.ToastNoLicenseKey);
                 return;
             }
-            var ok = await IpSec.DownloadDb(_edit.MaxMindLicenseKey);
+            var ok = await GeolocationDbDownloadService.DownloadDb(_edit.MaxMindLicenseKey);
             if (ok)
                 ToastService.ShowSuccess(_t.ToastDownloadOk);
             else

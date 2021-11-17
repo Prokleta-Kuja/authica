@@ -12,12 +12,25 @@ namespace authica
 {
     public class Program
     {
+        static bool _shouldStart = true;
+        static IHost _instance = null!;
         public static async Task Main(string[] args)
         {
             InitializeDirectories();
             await InitializeDb(args);
             await C.Configuration.LoadAsync();
-            CreateHostBuilder(args).Build().Run();
+
+            while (_shouldStart)
+            {
+                _shouldStart = false;
+                _instance = CreateHostBuilder(args).Build();
+                _instance.Run();
+            }
+        }
+        public static void Shutdown(bool restart = false)
+        {
+            _shouldStart = restart;
+            _instance.StopAsync();
         }
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)

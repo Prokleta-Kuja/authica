@@ -30,7 +30,7 @@ namespace authica.Models
         public string? Key { get; set; }
 
         public bool IsGeoBlockSetup => !string.IsNullOrWhiteSpace(MaxMindLicenseKey)
-            && File.Exists(C.Paths.AppDataFor(IpSecurity.DbFileName));
+            && C.GeoLocationDbFile.Exists;
 
         public bool IsMailSetup => SmtpPort.HasValue
             && !string.IsNullOrWhiteSpace(SmtpHost)

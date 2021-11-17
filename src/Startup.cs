@@ -1,8 +1,6 @@
-using System;
 using System.Diagnostics;
 using authica.Auth;
 using authica.Entities;
-using authica.Jobs;
 using authica.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -14,7 +12,6 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Quartz;
 
 namespace authica
 {
@@ -28,16 +25,6 @@ namespace authica
         public IConfiguration Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddQuartz(q =>
-            {
-                q.UseMicrosoftDependencyInjectionJobFactory();
-                q.ScheduleJob<GeolocationDbDownloadJob>(trigger => trigger
-                    .StartNow()
-                    .WithSimpleSchedule(x => x.WithInterval(TimeSpan.FromDays(7)))
-                );
-            });
-            services.AddQuartzServer(q => q.WaitForJobsToComplete = true);
-
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(CookieAuth.Configure);
@@ -69,6 +56,8 @@ namespace authica
             services.AddHttpContextAccessor();
             services.AddScoped<IpSecurity>();
             services.AddCurrentSession();
+            services.AddTransient<GeolocationDbDownloadService>();
+            services.AddHostedService<GeolocationDbUpdateService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

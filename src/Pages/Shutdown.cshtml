@@ -1,0 +1,27 @@
+@page "/shutdown/{**Slug}"
+@model authica.Pages.ShutdownModel
+@{
+    Layout = "_Layout";
+}
+
+<div class="d-flex align-items-center justify-content-center min-vh-100">
+    <div class="card m-1">
+        <div class="card-header text-center">
+            <h2>@(Model.IsRestart ? Model.T.RestartTitle : Model.T.ShutdownTitle)</h2>
+        </div>
+        <div class="card-body">
+            <h6>@(Model.IsRestart ? Model.T.RestartDescription : Model.T.ShutdownDescription)</h6>
+        </div>
+    </div>
+</div>
+
+@if (Model.IsRestart)
+{
+    <script>
+    function reload() {
+        window.location = "/";
+    }
+
+    setTimeout(reload, 5000);
+</script>
+}
