@@ -20,6 +20,7 @@ namespace authica.Pages.Roles
         [Inject] private NavigationManager Nav { get; set; } = null!;
         [Inject] private IPasswordHasher Hasher { get; set; } = null!;
         [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
+        [Inject] private AuthorizationStore AuthzStore { get; set; } = null!;
         [Parameter] public Guid AliasId { get; set; }
         private AppDbContext _db = null!;
         private RoleCreateModel? _create;
@@ -139,6 +140,8 @@ namespace authica.Pages.Roles
                 _item.Disabled = null;
 
             await _db.SaveChangesAsync();
+
+            AuthzStore.ClearAuthorizations();
         }
         void AddApp()
         {

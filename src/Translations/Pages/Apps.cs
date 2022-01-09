@@ -12,6 +12,7 @@ namespace authica.Translations
         string TableDisabled { get; }
         string RowDisabled { get; }
         string Name { get; }
+        string AuthorityUri { get; }
         string RedirectUri { get; }
         string Secret { get; }
         string NewSecret { get; }
@@ -32,6 +33,7 @@ namespace authica.Translations
         public string TableDisabled => "Disabled";
         public string RowDisabled => "No";
         public string Name => "Name";
+        public string AuthorityUri => "Host Uri";
         public string RedirectUri => "Redirect Uri";
         public string Secret => "Secret";
         public string NewSecret => "New Secret";
@@ -52,6 +54,7 @@ namespace authica.Translations
         public string TableDisabled => "Onemogućeno";
         public string RowDisabled => "Ne";
         public string Name => "Naziv";
+        public string AuthorityUri => "Uri";
         public string RedirectUri => "Preusmjeri na uri";
         public string Secret => "Tajna";
         public string NewSecret => "Nova tajna";

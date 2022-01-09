@@ -10,6 +10,7 @@ namespace authica.Models
         public int AppId { get; set; }
         public Guid AliasId { get; set; }
         public string? Name { get; set; }
+        public string? AuthorityUri { get; set; }
         public string? RedirectUri { get; set; }
         public string? NewSecret { get; set; }
         public bool AllowAllUsers { get; set; } = true;
@@ -19,6 +20,7 @@ namespace authica.Models
             AppId = a.AppId;
             AliasId = a.AliasId;
             Name = a.Name;
+            AuthorityUri = a.AuthorityUri;
             RedirectUri = a.RedirectUri;
             AllowAllUsers = a.AllowAllUsers;
             Disabled = a.Disabled.HasValue;
@@ -32,8 +34,13 @@ namespace authica.Models
             else if (names.Contains(Name.ToUpper()))
                 errors.Add(nameof(Name), translation.ValidationDuplicate);
 
-            if (string.IsNullOrWhiteSpace(RedirectUri))
-                errors.Add(nameof(RedirectUri), translation.ValidationRequired);
+            if (string.IsNullOrWhiteSpace(AuthorityUri))
+                errors.Add(nameof(AuthorityUri), translation.ValidationRequired);
+            else if (!Uri.TryCreate(AuthorityUri, UriKind.Absolute, out var full) || !string.IsNullOrWhiteSpace(full.PathAndQuery.Trim('/')))
+                errors.Add(nameof(AuthorityUri), translation.ValidationInvalid);
+
+            if (!string.IsNullOrWhiteSpace(RedirectUri) && !Uri.TryCreate(RedirectUri, UriKind.Relative, out var _))
+                errors.Add(nameof(RedirectUri), translation.ValidationInvalid);
 
             return errors.Any() ? errors : null;
         }

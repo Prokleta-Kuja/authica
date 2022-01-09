@@ -20,6 +20,7 @@ namespace authica.Pages.Apps
         [Inject] private NavigationManager Nav { get; set; } = null!;
         [Inject] private IPasswordHasher Hasher { get; set; } = null!;
         [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
+        [Inject] private AuthorizationStore AuthzStore { get; set; } = null!;
         [Parameter] public Guid AliasId { get; set; }
         private AppDbContext _db = null!;
         private AppCreateModel? _create;
@@ -93,7 +94,8 @@ namespace authica.Pages.Apps
             if (_errors != null)
                 return;
 
-            _item = new Entities.App(_create.Name!, _create.RedirectUri!);
+            _item = new Entities.App(_create.Name!, _create.AuthorityUri!.TrimEnd('/'));
+            _item.RedirectUri = _create.RedirectUri;
             _item.AllowAllUsers = _create.AllowAllUsers;
             _item.Disabled = _create.Disabled ? DateTime.UtcNow : null;
 
@@ -102,6 +104,8 @@ namespace authica.Pages.Apps
 
             _db.Apps.Add(_item);
             await _db.SaveChangesAsync();
+
+            AuthzStore.ClearAuthorizations();
 
             Nav.NavigateTo(C.Routes.AppsFor(_item.AliasId));
             _create = null;
@@ -118,6 +122,7 @@ namespace authica.Pages.Apps
                 return;
 
             _item.Name = _edit.Name!;
+            _item.AuthorityUri = _edit.AuthorityUri!.TrimEnd('/');
             _item.RedirectUri = _edit.RedirectUri!;
             _item.AllowAllUsers = _edit.AllowAllUsers;
 
@@ -130,6 +135,8 @@ namespace authica.Pages.Apps
                 _item.SecretHash = Hasher.HashPassword(_edit.NewSecret);
 
             await _db.SaveChangesAsync();
+
+            AuthzStore.ClearAuthorizations();
         }
         void ToggleAllowAllUsers()
         {

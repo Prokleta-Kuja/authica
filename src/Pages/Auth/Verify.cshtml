@@ -1,0 +1,25 @@
+@page "/authorize"
+@model authica.Pages.Auth.VerifyModel
+@{
+    Layout = "_Layout";
+}
+
+<div class="d-flex align-items-center justify-content-center min-vh-100">
+    <div class="card m-1">
+        <div class="card-body text-center">
+            @if (Model.Invalid)
+            {
+                <h2>@Model.T.Invalid</h2>
+            }
+            else if (!Model.HasApp)
+            {
+                <h2>@Model.T.UnknownApp</h2>
+            }
+            else if (!Model.Authorized)
+            {
+                <h2>@Model.T.Unauthorized</h2>
+                <a href=@Model.Rd class="card-link">@Model.Rd</a>
+            }
+        </div>
+    </div>
+</div>

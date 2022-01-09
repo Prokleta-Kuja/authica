@@ -55,6 +55,7 @@ namespace authica
             services.AddHttpClient();
             services.AddHttpContextAccessor();
             services.AddScoped<IpSecurity>();
+            services.AddTransient<AuthorizationStore>();
             services.AddCurrentSession();
             services.AddTransient<GeolocationDbDownloadService>();
             services.AddHostedService<GeolocationDbUpdateService>();
@@ -84,6 +85,7 @@ namespace authica
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapRazorPages().RequireAuthorization();
                 endpoints.MapFallbackToPage("/_Host");

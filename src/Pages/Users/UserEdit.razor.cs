@@ -20,6 +20,7 @@ namespace authica.Pages.Users
         [Inject] private NavigationManager Nav { get; set; } = null!;
         [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
         [Inject] private IPasswordHasher Hasher { get; set; } = null!;
+        [Inject] private AuthorizationStore AuthzStore { get; set; } = null!;
         [Parameter] public Guid AliasId { get; set; }
         private AppDbContext _db = null!;
         private UserCreateModel? _create;
@@ -109,6 +110,8 @@ namespace authica.Pages.Users
             _db.Users.Add(_item);
             await _db.SaveChangesAsync();
 
+            AuthzStore.ClearAuthorizations();
+
             Nav.NavigateTo(C.Routes.UsersFor(_item.AliasId));
             _create = null;
             _edit = new(_item);
@@ -140,6 +143,8 @@ namespace authica.Pages.Users
                 _item.SetPassword(_edit.NewPassword, Hasher);
 
             await _db.SaveChangesAsync();
+
+            AuthzStore.ClearAuthorizations();
         }
         void AddRole()
         {

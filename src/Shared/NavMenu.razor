@@ -11,12 +11,12 @@
         </button>
         <div class="collapse navbar-collapse d-md-flex justify-content-between" id="navbarNavDropdown">
             <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="@C.Routes.MyProfile"><i class="me-2 bi bi-person-badge"></i>
+                        @_t.MyProfile</a>
+                </li>
                 @if (Session.HasClaim(Claims.IsAdmin))
                 {
-                    <li class="nav-item">
-                        <a class="nav-link" href="@C.Routes.MyProfile"><i class="me-2 bi bi-person-badge"></i>
-                            @_t.MyProfile</a>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="@C.Routes.Roles"><i class="me-2 bi bi-person-rolodex"></i> @_t.Roles</a>
                     </li>

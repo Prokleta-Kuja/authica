@@ -10,8 +10,8 @@
                 <div class="card-body">
                     <TextBox For=@nameof(AppCreateModel.Name) Label=@_t.Name @bind-Value=_create.Name Errors=_errors Required
                         AutoFocus />
-                    <TextBox For=@nameof(AppCreateModel.RedirectUri) Label=@_t.RedirectUri @bind-Value=_create.RedirectUri Required
-                        Errors=_errors />
+                    <TextBox For=@nameof(AppCreateModel.AuthorityUri) Label=@_t.AuthorityUri @bind-Value=_create.AuthorityUri Required Errors=_errors />
+                    <TextBox For=@nameof(AppCreateModel.RedirectUri) Label=@_t.RedirectUri @bind-Value=_create.RedirectUri Errors=_errors />
                     <TextBox For=@nameof(AppCreateModel.Secret) Label=@_t.Secret @bind-Value=_create.Secret Errors=_errors
                         Type="password" AutoComplete="new-password" />
                     <Switch For=@nameof(AppCreateModel.AllowAllUsers) Label=@_t.AllowAllUsers @bind-Value=_create.AllowAllUsers
@@ -35,8 +35,8 @@ else if (_edit != null && _item != null)
             <div class="card-body">
                 <TextBox For=@nameof(AppEditModel.Name) Label=@_t.Name @bind-Value=_edit.Name Errors=_errors Required
                     AutoFocus />
-                <TextBox For=@nameof(AppEditModel.RedirectUri) Label=@_t.RedirectUri @bind-Value=_edit.RedirectUri
-                    Required Errors=_errors />
+                <TextBox For=@nameof(AppEditModel.AuthorityUri) Label=@_t.AuthorityUri @bind-Value=_edit.AuthorityUri Required Errors=_errors />
+                <TextBox For=@nameof(AppEditModel.RedirectUri) Label=@_t.RedirectUri @bind-Value=_edit.RedirectUri Errors=_errors />
                 <TextBox For=@nameof(AppEditModel.NewSecret) Label=@_t.NewSecret @bind-Value=_edit.NewSecret
                     Errors=_errors Type="new-password" />
                 <Switch For=@nameof(AppEditModel.Disabled) Label=@_t.Disabled @bind-Value=_edit.Disabled

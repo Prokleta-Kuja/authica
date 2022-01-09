@@ -36,6 +36,11 @@ namespace authica
             public const string Configuration = "/configuration";
             public const string Shutdown = "/shutdown";
             public const string Restart = "/shutdown/restart";
+            public const string VerifyNginx = "/nginx-verify";
+        }
+        public static class Headers
+        {
+            public const string OriginalUrl = "X-Original-URL";
         }
         public static class Paths
         {

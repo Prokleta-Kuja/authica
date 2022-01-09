@@ -28,7 +28,7 @@ namespace authica.Translations
     {
         public string App => "authica";
         public string Roles => "Uloge";
-        public string Users => "Users";
+        public string Users => "Korisnici";
         public string Apps => "Appovi";
         public string Configuration => "Postavke";
         public string MyProfile => "Moj profil";

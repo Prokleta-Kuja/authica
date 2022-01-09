@@ -48,6 +48,14 @@ namespace authica.Translations
 
             return new SignOut_en();
         }
+        public static IVerify Verify() => Verify(C.Env.Locale);
+        public static IVerify Verify(string locale)
+        {
+            if (locale.StartsWith("hr"))
+                return new Verify_hr();
+
+            return new Verify_en();
+        }
         public static IApps Apps() => Apps(C.Env.Locale);
         public static IApps Apps(string locale)
         {
