@@ -18,6 +18,7 @@ namespace authica.Translations
         string NewSecret { get; }
         string AllowAllUsers { get; }
         string DisallowAllUsers { get; }
+        string LdapEnabled { get; }
         string Disabled { get; }
         string ChooseRole { get; }
     }
@@ -39,6 +40,7 @@ namespace authica.Translations
         public string NewSecret => "New Secret";
         public string AllowAllUsers => "Allow all users";
         public string DisallowAllUsers => "Restrict to this roles";
+        public string LdapEnabled => "Enable LDAP";
         public string Disabled => "Disabled";
         public string ChooseRole => "Choose role";
     }
@@ -60,6 +62,7 @@ namespace authica.Translations
         public string NewSecret => "Nova tajna";
         public string AllowAllUsers => "Dozvoli svim korisnicima";
         public string DisallowAllUsers => "Ograniči na uloge";
+        public string LdapEnabled => "Omogući LDAP";
         public string Disabled => "Onemogućeno";
         public string ChooseRole => "Odaberi ulogu";
     }

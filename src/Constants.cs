@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Formats.Asn1;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -9,6 +10,7 @@ namespace authica
 {
     public static class C
     {
+        public static string Normalize(string text) => text.Trim().Replace(' ', '_').ToUpperInvariant();
         public static FileInfo GeoLocationDbFile { get; private set; } = new(C.Paths.AppDataFor("GeoLite2-Country.mmdb"));
         public static class Env
         {
@@ -47,6 +49,59 @@ namespace authica
             public static string AppData => Path.Combine(Environment.CurrentDirectory, "appdata");
             public static string AppDataFor(string file) => Path.Combine(AppData, file);
             public static readonly string AppDbConnectionString = $"Data Source={AppDataFor("app.db")}";
+        }
+        public static class Ldap
+        {
+            public static class Tags
+            {
+                public static readonly Asn1Tag BindRequest = new Asn1Tag(TagClass.Application, 0);
+                public static readonly Asn1Tag BindResponse = new Asn1Tag(TagClass.Application, 1);
+                public static readonly Asn1Tag AuthenticationSimple = new Asn1Tag(TagClass.ContextSpecific, 0);
+                public static readonly Asn1Tag SearchRequest = new Asn1Tag(TagClass.Application, 3);
+                public static readonly Asn1Tag SearchResult = new Asn1Tag(TagClass.Application, 4);
+                public static readonly Asn1Tag SearchDone = new Asn1Tag(TagClass.Application, 5);
+            }
+            public static class Attributes
+            {
+                public const string Dn = "dn";
+                public const string ObjectClass = "objectClass";
+                public const string EntryUuid = "entryuuid";
+                public const string Uid = "uid";
+                public const string Mail = "mail";
+                public const string Cn = "cn";
+                public const string DisplayName = "displayName";
+                public const string GivenName = "givenName";
+                public const string Sn = "sn";
+                public const string Member = "member";
+                public const string MemberOf = "memberOf";
+                public static readonly HashSet<string> All = new()
+                {
+                    Dn,
+                    ObjectClass,
+                    EntryUuid,
+                    Uid,
+                    Mail,
+                    Cn,
+                    DisplayName,
+                    GivenName,
+                    Sn,
+                    Member,
+                    MemberOf,
+                };
+            }
+            public enum ResultCode
+            {
+                Success = 0,
+                OperationsError = 1,
+                ProtocolError = 2,
+                TimeLimitExceeded = 3,
+                SizeLimitExceeded = 4,
+                AuthMethodNotSupported = 7,
+                NoSuchObject = 32,
+                InappropriateAuthentication = 48,
+                InvalidCredentials = 49,
+                InsufficientAccessRights = 50,
+            }
         }
         public static class Configuration
         {
