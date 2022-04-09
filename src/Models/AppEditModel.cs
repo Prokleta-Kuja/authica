@@ -14,6 +14,7 @@ namespace authica.Models
         public string? RedirectUri { get; set; }
         public string? NewSecret { get; set; }
         public bool AllowAllUsers { get; set; } = true;
+        public bool LdapEnabled { get; set; }
         public bool Disabled { get; set; }
         public AppEditModel(Entities.App a)
         {
@@ -23,6 +24,7 @@ namespace authica.Models
             AuthorityUri = a.AuthorityUri;
             RedirectUri = a.RedirectUri;
             AllowAllUsers = a.AllowAllUsers;
+            LdapEnabled = a.LdapEnabled;
             Disabled = a.Disabled.HasValue;
         }
         public Dictionary<string, string>? Validate(IApps translation, HashSet<string> names)

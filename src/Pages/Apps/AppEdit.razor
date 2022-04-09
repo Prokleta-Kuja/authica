@@ -39,6 +39,8 @@ else if (_edit != null && _item != null)
                 <TextBox For=@nameof(AppEditModel.RedirectUri) Label=@_t.RedirectUri @bind-Value=_edit.RedirectUri Errors=_errors />
                 <TextBox For=@nameof(AppEditModel.NewSecret) Label=@_t.NewSecret @bind-Value=_edit.NewSecret
                     Errors=_errors Type="new-password" />
+                <Switch For=@nameof(AppEditModel.LdapEnabled) Label=@_t.LdapEnabled @bind-Value=_edit.LdapEnabled
+                    Errors=_errors NoMargin OnHelpClicked=OpenLdapModalAsync />
                 <Switch For=@nameof(AppEditModel.Disabled) Label=@_t.Disabled @bind-Value=_edit.Disabled
                     Errors=_errors NoMargin />
             </div>
@@ -93,6 +95,55 @@ else if (_edit != null && _item != null)
             <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
         </div>
     </form>
+    <Modal @ref=LdapModal Title="LDAP" Scrollable>
+        <p>Enable this if the app doesn't support any newer protocols or requires LDAP.</p>
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>Geo blocking isn't enabled for LDAP access since the app will authenticate on behalf of its users.</span>
+            <p>TLS isn't enabled so be sure to secure it with TLS in your reverse proxy.</p>
+        </div>
+        <h4>DN's</h4>
+        <dl class="row">
+                <dt class="col-sm-4">Base DN</dt>
+                <dd class="col-sm-8 user-select-all mb-0">dc=@_item?.NameNormalized,dc=authica</dd>
+                <dt class="col-sm-4">App DN</dt>
+                <dd class="col-sm-8 user-select-all mb-0">dc=@_item?.NameNormalized,dc=authica</dd>
+                <dt class="col-sm-4">Example user DN</dt>
+                <dd class="col-sm-8 user-select-all mb-0">uid=some-username,dc=@_item?.NameNormalized,dc=authica</dd>
+                <dt class="col-sm-4">Example group DN</dt>
+                <dd class="col-sm-8 user-select-all mb-0">cn=Some Role,dc=@_item?.NameNormalized,dc=authica</dd>
+        </dl>
+        <h4>User attributes</h4>
+        <dl class="row">
+                <dt class="col-sm-4 user-select-all mb-0">inetOrgPerson</dt>
+                <dd class="col-sm-8">objectClass</dd>
+                <dt class="col-sm-4 user-select-all mb-0">entryuuid</dt>
+                <dd class="col-sm-8">Unique ID</dd>
+                <dt class="col-sm-4 user-select-all mb-0">uid</dt>
+                <dd class="col-sm-8">Username</dd>
+                <dt class="col-sm-4 user-select-all mb-0">mail</dt>
+                <dd class="col-sm-8">Mail</dd>
+                <dt class="col-sm-4 mb-0"><span class="user-select-all">displayName</span>, <span class="user-select-all">cn</span></dt>
+                <dd class="col-sm-8">Display name</dd>
+                <dt class="col-sm-4 user-select-all mb-0">givenName</dt>
+                <dd class="col-sm-8">First name</dd>
+                <dt class="col-sm-4 user-select-all mb-0">sn</dt>
+                <dd class="col-sm-8">Last name</dd>
+                <dt class="col-sm-4 user-select-all mb-0">memberOf</dt>
+                <dd class="col-sm-8">List of all group DN it is a member of</dd>
+        </dl>
+        <h4>Group attributes</h4>
+        <dl class="row">
+                <dt class="col-sm-4 user-select-all mb-0">groupOfNames</dt>
+                <dd class="col-sm-8">objectClass</dd>
+                <dt class="col-sm-4 user-select-all mb-0">entryuuid</dt>
+                <dd class="col-sm-8">Unique ID</dd>
+                <dt class="col-sm-4 mb-0"><span class="user-select-all">displayName</span>, <span class="user-select-all">cn</span></dt>
+                <dd class="col-sm-8">Display name</dd>
+                <dt class="col-sm-4 user-select-all mb-0">member</dt>
+                <dd class="col-sm-8">List of all user member DN</dd>
+        </dl>
+    </Modal>
 }
 else
 {

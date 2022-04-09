@@ -9,7 +9,9 @@ namespace authica.Entities
         User()
         {
             Email = null!;
+            EmailNormalized = null!;
             UserName = null!;
+            UserNameNormalized = null!;
             FirstName = null!;
             LastName = null!;
         }
@@ -22,7 +24,9 @@ namespace authica.Entities
 
             AliasId = Guid.NewGuid();
             Email = email.ToLowerInvariant();
+            EmailNormalized = C.Normalize(email);
             UserName = userName ?? email.Substring(0, index);
+            UserNameNormalized = C.Normalize(UserName);
             FirstName = firstName;
             LastName = lastName;
             Created = DateTime.UtcNow;
@@ -31,8 +35,10 @@ namespace authica.Entities
         public int UserId { get; set; }
         public Guid AliasId { get; set; }
         public string Email { get; set; }
+        public string EmailNormalized { get; set; }
         public bool EmailVerified { get; set; }
         public string UserName { get; set; }
+        public string UserNameNormalized { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? TimeZone { get; set; }

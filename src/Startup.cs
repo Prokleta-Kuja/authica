@@ -59,6 +59,7 @@ namespace authica
             services.AddCurrentSession();
             services.AddTransient<GeolocationDbDownloadService>();
             services.AddHostedService<GeolocationDbUpdateService>();
+            services.AddHostedService<LdapService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

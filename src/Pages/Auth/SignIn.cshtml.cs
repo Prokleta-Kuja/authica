@@ -50,10 +50,7 @@ namespace authica.Pages.Auth
             var username = Username!.ToLower().Trim();
             var password = Password!.Trim();
 
-            var user = await _db.Users
-                .Include(u => u.UserRoles)
-                .ThenInclude(ur => ur.Role)
-                .SingleOrDefaultAsync(u => u.UserName == username || u.Email == username);
+            var user = await _db.Users.SingleOrDefaultAsync(u => u.UserName == username || u.Email == username);
 
             if (user == null || user.Disabled.HasValue)
             {
