@@ -21,9 +21,7 @@ namespace authica.Services
         {
             try
             {
-                var licenceKey = licenseKeyOverride == null
-                    ? C.Configuration.Current.MaxMindLicenseKey
-                    : licenseKeyOverride;
+                var licenceKey = licenseKeyOverride ?? C.Configuration.Current.MaxMindLicenseKey;
 
                 using var client = _httpClientFactory.CreateClient();
                 var response = await client.GetAsync($"https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key={licenceKey}&suffix=tar.gz");

@@ -30,12 +30,12 @@ namespace authica.Auth
             o.ExpireTimeSpan = C.Configuration.Current.MaxSessionDuration;
         };
         public static AuthenticationProperties CreateAuthProps() =>
-            new AuthenticationProperties
+            new()
             {
                 AllowRefresh = true,
                 IssuedUtc = DateTime.UtcNow
             };
-        public static ClaimsPrincipal CreatePrincipal(User user) => new ClaimsPrincipal(CreateIdentity(user));
+        public static ClaimsPrincipal CreatePrincipal(User user) => new(CreateIdentity(user));
         public static ClaimsIdentity CreateIdentity(User user)
         {
             var claims = new List<Claim>
