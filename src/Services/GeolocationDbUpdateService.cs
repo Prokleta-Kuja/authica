@@ -13,7 +13,7 @@ namespace authica.Services
         const int REGULAR_UPDATE_IN_DAYS = 7;
         readonly ILogger<GeolocationDbUpdateService> _logger;
         readonly GeolocationDbDownloadService _downloadService;
-        Timer _timer;
+        readonly Timer _timer;
         public GeolocationDbUpdateService(ILogger<GeolocationDbUpdateService> logger, GeolocationDbDownloadService downloadService)
         {
             _logger = logger;

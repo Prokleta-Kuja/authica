@@ -13,7 +13,7 @@ namespace authica.Auth
         public async Task<string> StoreAsync(AuthenticationTicket ticket)
         {
             var key = ticket.Principal.FindFirst(Claims.SessionId);
-            if (!Guid.TryParse(key?.Value, out var sessionKey))
+            if (!Guid.TryParse(key?.Value, out _))
                 throw new ArgumentException("No session claim in ticket", nameof(ticket));
 
             await RenewAsync(key.Value, ticket);

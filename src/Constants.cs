@@ -105,7 +105,7 @@ namespace authica
         }
         public static class Configuration
         {
-            static FileInfo file = new(Paths.AppDataFor("configuration.json"));
+            static readonly FileInfo file = new(Paths.AppDataFor("configuration.json"));
             static JsonSerializerOptions serializerOptions = new()
             {
                 WriteIndented = true,
@@ -140,7 +140,7 @@ namespace authica
     }
     public class Settings
     {
-        private RSA _rsa;
+        private readonly RSA _rsa;
         public Settings()
         {
             _rsa = RSA.Create();
