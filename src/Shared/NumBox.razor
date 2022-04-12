@@ -1,7 +1,9 @@
+@using System.Globalization
+
 <div class="mb-3">
     <label for="@For" class="form-label">@Label @(Required ? "*":"")</label>
-    <input class="form-control @_errorClass" id="@For" placeholder=@PlaceHolder @bind=@InputValue required=@Required
-        @ref=Input>
+    <input class="form-control @_errorClass" id="@For" placeholder=@PlaceHolder @bind=@InputValue @bind:culture=_ci
+        required=@Required @ref=Input>
     @if (_isError)
     {
         <div class="invalid-feedback">
@@ -11,16 +13,20 @@
 </div>
 
 @code {
+    const string DEFAULT_LOCALE = "hr-HR";
+    const string DEFAULT_TZ = "Europe/Zagreb";
     private bool _isError => Errors != null && Errors.ContainsKey(For);
     private string _errorClass => _isError ? "is-invalid" : string.Empty;
     private ElementReference Input;
-    private int? InputValue { get => Value; set { _ = UpdateAsync(value); } }
+    private decimal? InputValue { get => Value; set { _ = UpdateAsync(value); } }
+    CultureInfo _ci = null!;
     [Parameter] public string For { get; set; } = null!;
     [Parameter] public string Label { get; set; } = null!;
-    [Parameter] public int? Value { get; set; }
-    [Parameter] public EventCallback<int?> ValueChanged { get; set; }
+    [Parameter] public decimal? Value { get; set; }
+    [Parameter] public EventCallback<decimal?> ValueChanged { get; set; }
     [Parameter] public bool Required { get; set; }
     [Parameter] public string? PlaceHolder { get; set; }
+    [Parameter] public string? Locale { get; set; }
     [Parameter] public Dictionary<string, string>? Errors { get; set; }
     [Parameter] public bool AutoFocus { get; set; }
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -28,7 +34,12 @@
         if (firstRender && AutoFocus)
             await Input.FocusAsync();
     }
-    async Task UpdateAsync(int? value)
+    protected override void OnInitialized()
+    {
+        try { _ci = CultureInfo.GetCultureInfo(Locale ?? DEFAULT_LOCALE); }
+        catch (Exception) { _ci = CultureInfo.GetCultureInfo(DEFAULT_LOCALE); }
+    }
+    private async Task UpdateAsync(decimal? value)
     {
         if (_isError)
             Errors!.Remove(For);

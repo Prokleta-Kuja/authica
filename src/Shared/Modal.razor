@@ -3,7 +3,7 @@
     <div class=@_dialogValue @onclick:stopPropagation>
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLiveLabel">@Title</h5>
+                <h5 class="modal-title">@Title</h5>
                 <button type="button" class="btn-close" @onclick=CloseAsync></button>
             </div>
             @if (ChildContent != null)
@@ -54,8 +54,6 @@
 
         base.OnInitialized();
     }
-
-
 
     public async Task ToggleOpenAsync()
     {

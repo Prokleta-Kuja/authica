@@ -1,6 +1,6 @@
 <div class="mb-3">
     <label for="@For" class="form-label">@Label @(Required ? "*":"")</label>
-    <select @ref=Input class="form-select @(_isError ? "is-invalid":"")" @bind=@Value @onblur=Update required=@Required>
+    <select @ref=Input class="form-select @(_isError ? "is-invalid":"")" @bind=SelectValue required=@Required>
         @foreach (var item in Items)
         {
             <option value="@item.Key">@item.Value</option>
@@ -17,6 +17,7 @@
 @code {
     private bool _isError => Errors != null && Errors.ContainsKey(For);
     private ElementReference Input;
+    private int SelectValue { get => Value; set { _ = UpdateAsync(value); } }
     [Parameter] public string For { get; set; } = null!;
     [Parameter] public string Label { get; set; } = null!;
     [Parameter] public int Value { get; set; }
@@ -31,7 +32,7 @@
         if (firstRender && AutoFocus)
             await Input.FocusAsync();
     }
-    private async Task Update()
+    private async Task UpdateAsync(int value)
     {
         if (_isError)
             Errors!.Remove(For);
@@ -39,6 +40,6 @@
         if (!ValueChanged.HasDelegate)
             return;
 
-        await ValueChanged.InvokeAsync(Value);
+        await ValueChanged.InvokeAsync(value);
     }
 }

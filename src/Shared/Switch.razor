@@ -1,6 +1,6 @@
 <div class="form-check form-switch @(NoMargin ? "" : "mb-3")">
     <input @ref=Input class="form-check-input @(_isError ? "is-invalid":"")" type="checkbox" id="@For"
-        required=@Required @bind=@Value @onblur=Update>
+        required=@Required @bind=@InputValue>
     <label class="form-check-label" for="@For">@Label @(Required ? "*":"")</label>
     @if (!string.IsNullOrWhiteSpace(HelpTitle) || OnHelpClicked.HasDelegate)
     {
@@ -17,6 +17,7 @@
 @code {
     private bool _isError => Errors != null && Errors.ContainsKey(For);
     private ElementReference Input;
+    private bool InputValue { get => Value; set { _ = UpdateAsync(value); } }
     [Parameter] public string For { get; set; } = null!;
     [Parameter] public string Label { get; set; } = null!;
     [Parameter] public bool Value { get; set; }
@@ -33,7 +34,7 @@
             await Input.FocusAsync();
     }
 
-    private async Task Update()
+    private async Task UpdateAsync(bool value)
     {
         if (_isError)
             Errors!.Remove(For);
@@ -41,7 +42,7 @@
         if (!ValueChanged.HasDelegate)
             return;
 
-        await ValueChanged.InvokeAsync(Value);
+        await ValueChanged.InvokeAsync(value);
     }
 
     private async Task HelpClicked()

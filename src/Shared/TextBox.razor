@@ -3,12 +3,12 @@
     @if (Lines == 1)
     {
         <input type=@Type @ref=Input class="form-control @(_isError ? "is-invalid":"")" id="@For" placeholder=@PlaceHolder
-        @bind=@Value @onblur=Update required=@Required autocomplete=@AutoComplete>
+        @bind=InputValue required=@Required autocomplete=@AutoComplete>
     }
     else
     {
         <textarea @ref=Input class="form-control @(_isError ? "is-invalid":"")" id="@For" placeholder=@PlaceHolder
-        @bind=@Value @onblur=Update required=@Required rows=@Lines autocomplete=@AutoComplete></textarea>
+        @bind=InputValue required=@Required rows=@Lines autocomplete=@AutoComplete></textarea>
     }
     @if (_isError)
     {
@@ -21,6 +21,7 @@
 @code {
     private bool _isError => Errors != null && Errors.ContainsKey(For);
     private ElementReference Input;
+    private string? InputValue { get => Value; set { _ = UpdateAsync(value); } }
     [Parameter] public string For { get; set; } = null!;
     [Parameter] public string Label { get; set; } = null!;
     [Parameter] public string? Value { get; set; }
@@ -38,7 +39,7 @@
             await Input.FocusAsync();
     }
 
-    private async Task Update()
+    async Task UpdateAsync(string? value)
     {
         if (_isError)
             Errors!.Remove(For);
@@ -46,9 +47,9 @@
         if (!ValueChanged.HasDelegate)
             return;
 
-        if (string.IsNullOrWhiteSpace(Value))
+        if (string.IsNullOrWhiteSpace(value))
             await ValueChanged.InvokeAsync(null);
 
-        await ValueChanged.InvokeAsync(Value);
+        await ValueChanged.InvokeAsync(value);
     }
 }
