@@ -6,30 +6,29 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace authica.Pages.Auth
+namespace authica.Pages.Auth;
+
+[AllowAnonymous]
+[IgnoreAntiforgeryToken]
+public class SignOutModel : PageModel
 {
-    [AllowAnonymous]
-    [IgnoreAntiforgeryToken]
-    public class SignOutModel : PageModel
+    public ISignOut T = LocalizationFactory.SignOut();
+    public CurrentSession Session;
+
+    public SignOutModel(CurrentSession session)
     {
-        public ISignOut T = LocalizationFactory.SignOut();
-        public CurrentSession Session;
+        Session = session;
+    }
 
-        public SignOutModel(CurrentSession session)
-        {
-            Session = session;
-        }
+    [FromRoute] public string? Slug { get; set; }
+    public IActionResult OnGet()
+    {
+        T = string.IsNullOrWhiteSpace(Slug) ? LocalizationFactory.SignOut(Session.LocaleId) : LocalizationFactory.SignOut(Slug);
 
-        [FromRoute] public string? Slug { get; set; }
-        public IActionResult OnGet()
-        {
-            T = string.IsNullOrWhiteSpace(Slug) ? LocalizationFactory.SignOut(Session.LocaleId) : LocalizationFactory.SignOut(Slug);
+        if (!Session.IsAuthenticated)
+            return Page();
 
-            if (!Session.IsAuthenticated)
-                return Page();
-
-            var props = new AuthenticationProperties { RedirectUri = $"{C.Routes.SignOut}/{Session.LocaleId}" };
-            return SignOut(props, CookieAuthenticationDefaults.AuthenticationScheme);
-        }
+        var props = new AuthenticationProperties { RedirectUri = $"{C.Routes.SignOut}/{Session.LocaleId}" };
+        return SignOut(props, CookieAuthenticationDefaults.AuthenticationScheme);
     }
 }

@@ -9,83 +9,82 @@ using authica.Models;
 using authica.Translations;
 using Microsoft.Extensions.Logging;
 
-namespace authica.Services
+namespace authica.Services;
+
+public class MailService
 {
-    public class MailService
+    readonly ILogger<MailService> _logger;
+    readonly IMailService _t = LocalizationFactory.MailService();
+
+    public MailService(ILogger<MailService> logger)
     {
-        readonly ILogger<MailService> _logger;
-        readonly IMailService _t = LocalizationFactory.MailService();
+        _logger = logger;
+    }
 
-        public MailService(ILogger<MailService> logger)
-        {
-            _logger = logger;
-        }
+    public bool IsSetup => C.Configuration.Current.SmtpPort.HasValue
+        && !string.IsNullOrWhiteSpace(C.Configuration.Current.SmtpHost)
+        && !string.IsNullOrWhiteSpace(C.Configuration.Current.SmtpPassword)
+        && !string.IsNullOrWhiteSpace(C.Configuration.Current.SmtpFromName)
+        && !string.IsNullOrWhiteSpace(C.Configuration.Current.SmtpFromAddress);
 
-        public bool IsSetup => C.Configuration.Current.SmtpPort.HasValue
-            && !string.IsNullOrWhiteSpace(C.Configuration.Current.SmtpHost)
-            && !string.IsNullOrWhiteSpace(C.Configuration.Current.SmtpPassword)
-            && !string.IsNullOrWhiteSpace(C.Configuration.Current.SmtpFromName)
-            && !string.IsNullOrWhiteSpace(C.Configuration.Current.SmtpFromAddress);
+    public async Task SendAsync(MailMessage message, CancellationToken cancellationToken = default)
+    {
+        if (!IsSetup)
+            throw new AggregateException("Mail service not setup");
 
-        public async Task SendAsync(MailMessage message, CancellationToken cancellationToken = default)
-        {
-            if (!IsSetup)
-                throw new System.AggregateException("Mail service not setup");
+        using var client = new SmtpClient(C.Configuration.Current.SmtpHost, C.Configuration.Current.SmtpPort!.Value);
+        client.Timeout = (int)C.Configuration.Current.SmtpTimeout.TotalMilliseconds;
+        client.EnableSsl = C.Configuration.Current.SmtpSsl;
 
-            using var client = new SmtpClient(C.Configuration.Current.SmtpHost, C.Configuration.Current.SmtpPort!.Value);
-            client.Timeout = (int)C.Configuration.Current.SmtpTimeout.TotalMilliseconds;
-            client.EnableSsl = C.Configuration.Current.SmtpSsl;
+        if (!string.IsNullOrWhiteSpace(C.Configuration.Current.SmtpUser) && !string.IsNullOrWhiteSpace(C.Configuration.Current.SmtpPassword))
+            client.Credentials = new NetworkCredential(C.Configuration.Current.SmtpUser, C.Configuration.Current.SmtpPassword);
 
-            if (!string.IsNullOrWhiteSpace(C.Configuration.Current.SmtpUser) && !string.IsNullOrWhiteSpace(C.Configuration.Current.SmtpPassword))
-                client.Credentials = new NetworkCredential(C.Configuration.Current.SmtpUser, C.Configuration.Current.SmtpPassword);
+        await client.SendMailAsync(message, cancellationToken);
 
-            await client.SendMailAsync(message, cancellationToken);
+        _logger.LogDebug("Mail {Subject} sent successfully to {To}", message.Subject, message.To[0].Address);
+    }
+    public MailMessage GetStandardMessage(MailAddress from, MailAddress to, string subject, string body)
+    {
+        var message = new MailMessage(from, to) { IsBodyHtml = true };
+        message.BodyEncoding = message.HeadersEncoding = message.SubjectEncoding = Encoding.UTF8;
+        message.Subject = subject;
+        message.Body = body;
 
-            _logger.LogDebug("Mail {Subject} sent successfully to {To}", message.Subject, message.To[0].Address);
-        }
-        public MailMessage GetStandardMessage(MailAddress from, MailAddress to, string subject, string body)
-        {
-            var message = new MailMessage(from, to) { IsBodyHtml = true };
-            message.BodyEncoding = message.HeadersEncoding = message.SubjectEncoding = Encoding.UTF8;
-            message.Subject = subject;
-            message.Body = body;
+        // disable autoresponders like out-of-office
+        message.Headers.Add("Auto-Submitted", "auto-generated");
+        message.Headers.Add("Precedence", "bulk");
+        // https://blog.mailtrap.io/list-unsubscribe-header/
+        // https://certified-senders.org/wp-content/uploads/2017/07/CSA_one-click_list-unsubscribe.pdf
+        //message.Headers.Add("List-Unsubscribe", "<http://www.example.com/unsubscribe.html>");
 
-            // disable autoresponders like out-of-office
-            message.Headers.Add("Auto-Submitted", "auto-generated");
-            message.Headers.Add("Precedence", "bulk");
-            // https://blog.mailtrap.io/list-unsubscribe-header/
-            // https://certified-senders.org/wp-content/uploads/2017/07/CSA_one-click_list-unsubscribe.pdf
-            //message.Headers.Add("List-Unsubscribe", "<http://www.example.com/unsubscribe.html>");
+        return message;
+    }
+    public async Task SendTestEmailAsync(string testEmail, SettingsEditModel testSettings, CancellationToken cancellationToken = default)
+    {
+        var from = new MailAddress(testSettings.SmtpFromAddress!, testSettings.SmtpFromName);
+        var to = new MailAddress(testEmail);
+        var subject = _t.TestSubject;
+        var body = _t.TestBody;
+        var message = GetStandardMessage(from, to, subject, body);
 
-            return message;
-        }
-        public async Task SendTestEmailAsync(string testEmail, SettingsEditModel testSettings, CancellationToken cancellationToken = default)
-        {
-            var from = new MailAddress(testSettings.SmtpFromAddress!, testSettings.SmtpFromName);
-            var to = new MailAddress(testEmail);
-            var subject = _t.TestSubject;
-            var body = _t.TestBody;
-            var message = GetStandardMessage(from, to, subject, body);
+        using var client = new SmtpClient(testSettings.SmtpHost, testSettings.SmtpPort!.Value);
+        client.Timeout = (int)testSettings.SmtpTimeout!.Value.TotalMilliseconds;
+        client.EnableSsl = testSettings.SmtpSsl;
 
-            using var client = new SmtpClient(testSettings.SmtpHost, testSettings.SmtpPort!.Value);
-            client.Timeout = (int)testSettings.SmtpTimeout!.Value.TotalMilliseconds;
-            client.EnableSsl = testSettings.SmtpSsl;
+        if (!string.IsNullOrWhiteSpace(testSettings.SmtpUser) && !string.IsNullOrWhiteSpace(testSettings.SmtpPassword))
+            client.Credentials = new NetworkCredential(testSettings.SmtpUser, testSettings.SmtpPassword);
 
-            if (!string.IsNullOrWhiteSpace(testSettings.SmtpUser) && !string.IsNullOrWhiteSpace(testSettings.SmtpPassword))
-                client.Credentials = new NetworkCredential(testSettings.SmtpUser, testSettings.SmtpPassword);
+        await client.SendMailAsync(message, cancellationToken);
+    }
+    public async Task SendPasswordResetAsync(User user, Guid token, CancellationToken cancellationToken = default)
+    {
+        var resetLink = $"{C.Configuration.Current.HostName}{C.Routes.ResetPassword}/{token}";
+        var from = new MailAddress(C.Configuration.Current.SmtpFromAddress, C.Configuration.Current.SmtpFromName);
+        var to = new MailAddress(user.Email, $"{user.FirstName} {user.LastName}");
+        var subject = _t.ResetPasswordSubject;
+        var body = _t.ResetPasswordBody(resetLink);
+        var message = GetStandardMessage(from, to, subject, body);
 
-            await client.SendMailAsync(message, cancellationToken);
-        }
-        public async Task SendPasswordResetAsync(User user, Guid token, CancellationToken cancellationToken = default)
-        {
-            var resetLink = $"{C.Configuration.Current.HostName}{C.Routes.ResetPassword}/{token}";
-            var from = new MailAddress(C.Configuration.Current.SmtpFromAddress, C.Configuration.Current.SmtpFromName);
-            var to = new MailAddress(user.Email, $"{user.FirstName} {user.LastName}");
-            var subject = _t.ResetPasswordSubject;
-            var body = _t.ResetPasswordBody(resetLink);
-            var message = GetStandardMessage(from, to, subject, body);
-
-            await SendAsync(message, cancellationToken);
-        }
+        await SendAsync(message, cancellationToken);
     }
 }
