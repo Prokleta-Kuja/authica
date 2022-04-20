@@ -11,6 +11,9 @@ public class SettingsEditModel
     public string? Domain { get; set; }
     public string? HostName { get; set; }
     public int? MaxInfractions { get; set; }
+    public bool EnableLdap { get; set; }
+    public int? MinPasswordLength { get; set; }
+    public int? MaxPasswordLength { get; set; }
     public TimeSpan? InfractionExpiration { get; set; }
     public TimeSpan? BanTime { get; set; }
     public TimeSpan? MaxSessionDuration { get; set; }
@@ -41,6 +44,9 @@ public class SettingsEditModel
         Issuer = s.Issuer;
         Domain = s.Domain;
         HostName = s.HostName;
+        EnableLdap = s.EnableLdap;
+        MinPasswordLength = s.MinPasswordLength;
+        MaxPasswordLength = s.MaxPasswordLength;
         MaxInfractions = s.MaxInfractions;
         InfractionExpiration = s.InfractionExpiration;
         BanTime = s.BanTime;
@@ -65,6 +71,9 @@ public class SettingsEditModel
         s.Issuer = Issuer!;
         s.Domain = Domain!;
         s.HostName = HostName!;
+        s.EnableLdap = EnableLdap;
+        s.MinPasswordLength = MinPasswordLength!.Value;
+        s.MaxPasswordLength = MaxPasswordLength!.Value;
         s.MaxInfractions = MaxInfractions!.Value;
         s.InfractionExpiration = InfractionExpiration!.Value;
         s.BanTime = BanTime!.Value;
@@ -96,6 +105,16 @@ public class SettingsEditModel
 
         if (string.IsNullOrWhiteSpace(HostName))
             errors.Add(nameof(HostName), translation.ValidationRequired);
+
+        if (!MinPasswordLength.HasValue)
+            errors.Add(nameof(MinPasswordLength), translation.ValidationRequired);
+        else if (MinPasswordLength.Value < 0)
+            errors.Add(nameof(MinPasswordLength), translation.ValidationInvalid);
+
+        if (!MaxPasswordLength.HasValue)
+            errors.Add(nameof(MaxPasswordLength), translation.ValidationRequired);
+        else if (MaxPasswordLength.Value < 0)
+            errors.Add(nameof(MaxPasswordLength), translation.ValidationInvalid);
 
         if (!MaxInfractions.HasValue)
             errors.Add(nameof(MaxInfractions), translation.ValidationRequired);

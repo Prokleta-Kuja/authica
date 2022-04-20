@@ -9,6 +9,9 @@ public interface IConfiguration : IStandard
     string Issuer { get; }
     string Domain { get; }
     string HostName { get; }
+    string EnableLdap { get; }
+    string MinPasswordLength { get; }
+    string MaxPasswordLength { get; }
     string MaxSessionDuration { get; }
     string MaxInfractions { get; }
     string InfractionExpiration { get; }
@@ -54,6 +57,9 @@ public class Configuration_en : Standard_en, IConfiguration
     public string Issuer => "Issuer";
     public string HostName => "Url";
     public string Domain => "Domain";
+    public string EnableLdap => "Enable LDAP";
+    public string MinPasswordLength => "Minimum password length";
+    public string MaxPasswordLength => "Maximum password length";
     public string MaxSessionDuration => "Session duration";
     public string MaxInfractions => "Max infractions";
     public string InfractionExpiration => "Infraction expiration";
@@ -99,6 +105,9 @@ public class Configuration_hr : Standard_hr, IConfiguration
     public string Issuer => "Izdavač";
     public string HostName => "Url";
     public string Domain => "Domena";
+    public string EnableLdap => "Omogući LDAP";
+    public string MinPasswordLength => "Minimalna duljina lozinke";
+    public string MaxPasswordLength => "Maksimalna duljina lozinke";
     public string MaxSessionDuration => "Duljina sesije";
     public string MaxInfractions => "Maksimalno prekršaja";
     public string InfractionExpiration => "Istek prekršaja nakon";

@@ -150,6 +150,7 @@ public class Settings
     public string Issuer { get; set; } = "authica";
     public string Domain { get; set; } = Environment.GetEnvironmentVariable("DOMAIN") ?? "localhost";
     public string HostName { get; set; } = "http://localhost:5000";
+    public bool EnableLdap { get; set; }
     public int MinPasswordLength { get; set; } = 16;
     public int MaxPasswordLength { get; set; } = 64;
     public int MaxInfractions { get; set; } = 5;

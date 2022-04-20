@@ -37,9 +37,8 @@ public class LdapService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        //TODO: add config check for ldap enable
-        // if (false)
-        //     return;
+        if (!C.Configuration.Current.EnableLdap)
+            return;
 
         var address = new IPAddress(new byte[] { 0, 0, 0, 0 });
         var endpoint = new IPEndPoint(address, 389);
