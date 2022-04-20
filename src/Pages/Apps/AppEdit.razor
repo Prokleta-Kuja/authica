@@ -95,53 +95,53 @@ else if (_edit != null && _item != null)
             <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
         </div>
     </form>
-    <Modal @ref=LdapModal Title="LDAP" Scrollable>
-        <p>Enable this if the app doesn't support any newer protocols or requires LDAP.</p>
+    <Modal @ref=LdapModal Title=LDAP Scrollable>
+        <p>@_t.LdapDescription</p>
         <div class="alert alert-warning" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            <span>Geo blocking isn't enabled for LDAP access since the app will authenticate on behalf of its users.</span>
-            <p>TLS isn't enabled so be sure to secure it with TLS in your reverse proxy.</p>
+            <span>@_t.LdapGeoWarning</span>
+            <p>@_t.LdapTlsWarning</p>
         </div>
-        <h4>DN's</h4>
+        <h4>@_t.Dns</h4>
         <dl class="row">
-                <dt class="col-sm-4">Base DN</dt>
+                <dt class="col-sm-4">@_t.BaseDN</dt>
                 <dd class="col-sm-8 user-select-all mb-0">dc=@_item?.NameNormalized,dc=authica</dd>
-                <dt class="col-sm-4">App DN</dt>
+                <dt class="col-sm-4">@_t.AppDN</dt>
                 <dd class="col-sm-8 user-select-all mb-0">dc=@_item?.NameNormalized,dc=authica</dd>
-                <dt class="col-sm-4">Example user DN</dt>
+                <dt class="col-sm-4">@_t.ExampleUserDN</dt>
                 <dd class="col-sm-8 user-select-all mb-0">uid=some-username,dc=@_item?.NameNormalized,dc=authica</dd>
-                <dt class="col-sm-4">Example group DN</dt>
+                <dt class="col-sm-4">@_t.ExampleGroupDN</dt>
                 <dd class="col-sm-8 user-select-all mb-0">cn=Some Role,dc=@_item?.NameNormalized,dc=authica</dd>
         </dl>
-        <h4>User attributes</h4>
+        <h4>@_t.UserAttributes</h4>
         <dl class="row">
                 <dt class="col-sm-4 user-select-all mb-0">inetOrgPerson</dt>
                 <dd class="col-sm-8">objectClass</dd>
                 <dt class="col-sm-4 user-select-all mb-0">entryuuid</dt>
-                <dd class="col-sm-8">Unique ID</dd>
+                <dd class="col-sm-8">@_t.UniqueId</dd>
                 <dt class="col-sm-4 user-select-all mb-0">uid</dt>
-                <dd class="col-sm-8">Username</dd>
+                <dd class="col-sm-8">@_t.Username</dd>
                 <dt class="col-sm-4 user-select-all mb-0">mail</dt>
-                <dd class="col-sm-8">Mail</dd>
+                <dd class="col-sm-8">@_t.Mail</dd>
                 <dt class="col-sm-4 mb-0"><span class="user-select-all">displayName</span>, <span class="user-select-all">cn</span></dt>
-                <dd class="col-sm-8">Display name</dd>
+                <dd class="col-sm-8">@_t.DisplayName</dd>
                 <dt class="col-sm-4 user-select-all mb-0">givenName</dt>
-                <dd class="col-sm-8">First name</dd>
+                <dd class="col-sm-8">@_t.FirstName</dd>
                 <dt class="col-sm-4 user-select-all mb-0">sn</dt>
-                <dd class="col-sm-8">Last name</dd>
+                <dd class="col-sm-8">@_t.LastName</dd>
                 <dt class="col-sm-4 user-select-all mb-0">memberOf</dt>
-                <dd class="col-sm-8">List of all group DN it is a member of</dd>
+                <dd class="col-sm-8">@_t.MemberOf</dd>
         </dl>
-        <h4>Group attributes</h4>
+        <h4>@_t.GroupAttributes</h4>
         <dl class="row">
                 <dt class="col-sm-4 user-select-all mb-0">groupOfNames</dt>
                 <dd class="col-sm-8">objectClass</dd>
                 <dt class="col-sm-4 user-select-all mb-0">entryuuid</dt>
-                <dd class="col-sm-8">Unique ID</dd>
+                <dd class="col-sm-8">@_t.UniqueId</dd>
                 <dt class="col-sm-4 mb-0"><span class="user-select-all">displayName</span>, <span class="user-select-all">cn</span></dt>
-                <dd class="col-sm-8">Display name</dd>
+                <dd class="col-sm-8">@_t.DisplayName</dd>
                 <dt class="col-sm-4 user-select-all mb-0">member</dt>
-                <dd class="col-sm-8">List of all user member DN</dd>
+                <dd class="col-sm-8">@_t.Member</dd>
         </dl>
     </Modal>
 }
