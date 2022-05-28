@@ -136,6 +136,7 @@ public static class C
             var contents = JsonSerializer.Serialize(settings, serializerOptions);
             await File.WriteAllTextAsync(file.FullName, contents);
         }
+        public static ValueTask SaveToDiskAsync() => SaveToDiskAsync(Current);
     }
 }
 public class Settings

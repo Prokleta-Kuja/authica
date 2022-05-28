@@ -15,7 +15,7 @@ public class User
         FirstName = null!;
         LastName = null!;
     }
-    internal User(string email, string? userName, string? firstName, string? lastName)
+    internal User(string email, string? userName, string? firstName = null, string? lastName = null)
     {
         var index = email.IndexOf('@');
         var emailValid = index > 0 && index != email.Length - 1 && index == email.LastIndexOf('@');
