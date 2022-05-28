@@ -1,5 +1,33 @@
-# Nginx
+# Authica
+TODO: write description
 
+## Valid domain and HTTPS
+
+Authica allows you to login on all subdomains for a single domain. Initial domain is set from passing environment variable `DOMAIN`. Entering valid credentials on a different domain will not allow you to login as the cookie won't match. To change it later, create a file called `DOMAIN` with domain which you would like to use in config directory and restart the container.
+
+```
+echo "example.com" > DOMAIN
+```
+
+Authica won't be able to protect apps using forward authentication if you can't obtan HTTPS certificates.
+
+## Initial user and password
+
+Initial username is `admin` with a password set from environment variable `PASSWORD`. If you don't provide the enviroment variable, it will be set to `P@ssw0rd`.
+
+## Forgotten admin credentials
+
+To reset your admin credentials, or create a new one, create a file called `ADMIN` with username on the first line and password on the second line. Place the file in config directory and restart the container.
+
+```
+printf 'MY_USERNAME\nMY_PASSWORD' > ADMIN
+```
+
+## Integrations
+
+<details>
+  <summary>nginx</summary>
+  
 add_authica_endpoint.conf
 ```
 set $upstream_authica http://authica.example.com/nginx-verify;
@@ -66,3 +94,4 @@ auth_request_set $target_url $scheme://$http_host$request_uri;
 # For other type of errors, nginx will handle them as usual.
 error_page 401 403 404 =302 https://auth-test.ica.hr/authorize?rd=$target_url;
 ```
+</details>

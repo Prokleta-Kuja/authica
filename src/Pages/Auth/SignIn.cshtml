@@ -2,6 +2,7 @@
 @model authica.Pages.Auth.SignInModel
 @{
     Layout = "_Layout";
+    ViewBag.Title = $"Sign in - {authica.C.Configuration.Current.Issuer}";
 }
 
 <div class="d-flex align-items-center justify-content-center min-vh-100">
@@ -15,9 +16,9 @@
                     <form method="post">
                         <div class="mb-3">
                             <label for="username" class="form-label">@Model.T.UsernameEmail</label>
-                            <input type="text" autofocus
+                            <input type="text" autofocus=@(Model.Username == null)
                                 class="form-control @(Model.Errors.ContainsKey(nameof(Model.Username)) ? "is-invalid" : string.Empty)"
-                                id="username" name=@nameof(Model.Username)>
+                                id="username" name=@nameof(Model.Username) value=@Model.Username>
                             @if (Model.Errors.ContainsKey(nameof(Model.Username)))
                             {
                                 <div class="invalid-feedback">
@@ -27,7 +28,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">@Model.T.Password</label>
-                            <input type="password"
+                            <input type="password" autofocus=@(Model.Username != null)
                                 class="form-control @(Model.Errors.ContainsKey(nameof(Model.Password)) ? "is-invalid" : string.Empty)"
                                 id="password" name=@nameof(Model.Password)>
                             @if (Model.Errors.ContainsKey(nameof(Model.Password)))

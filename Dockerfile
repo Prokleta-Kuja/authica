@@ -14,6 +14,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/out ./
 
-ENV ASPNETCORE_URLS=http://*:50505
+ENV ASPNETCORE_URLS=http://*:50505 \
+    LOCALE=en-US \
+    TZ=America/Chicago \
+    PASSWORD=P@ssw0rd
 
 ENTRYPOINT ["dotnet", "authica.dll"]

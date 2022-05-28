@@ -2,6 +2,7 @@
 @model authica.Pages.Auth.SignOutModel
 @{
     Layout = "_Layout";
+    ViewBag.Title = $"Signed out - {authica.C.Configuration.Current.Issuer}";
 }
 
 <div class="d-flex align-items-center justify-content-center min-vh-100">
