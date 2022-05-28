@@ -11,7 +11,7 @@ namespace authica;
 public static class C
 {
     public static string Normalize(string text) => text.Trim().Replace(' ', '_').ToUpperInvariant();
-    public static FileInfo GeoLocationDbFile { get; private set; } = new(C.Paths.AppDataFor("GeoLite2-Country.mmdb"));
+    public static FileInfo GeoLocationDbFile { get; private set; } = new(Paths.AppDataFor("GeoLite2-Country.mmdb"));
     public static class Env
     {
         public static string Locale => Environment.GetEnvironmentVariable("LOCALE") ?? "en-US";

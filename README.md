@@ -23,6 +23,8 @@ To reset your admin credentials, or create a new one, create a file called `ADMI
 printf 'MY_USERNAME\nMY_PASSWORD' > ADMIN
 ```
 
+## Geo blocking
+Authica can allow access to only specific countries. To enable it, place `GeoLite2-Country.mmdb` in config directory or enter MaxMind License in Geo blocking section of the configuration page.
 ## Integrations
 
 <details>
