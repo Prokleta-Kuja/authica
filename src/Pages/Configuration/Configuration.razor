@@ -11,7 +11,7 @@
                 <TextBox For=@nameof(_edit.Domain) Label=@_t.Domain @bind-Value=_edit.Domain Errors=_errors Required />
                 <TextBox For=@nameof(_edit.HostName) Label=@_t.HostName @bind-Value=_edit.HostName Errors=_errors
                     Required />
-                <InputCheckbox For=@nameof(_edit.EnableLdap) Label=@_t.EnableLdap @bind-Value=_edit.EnableLdap
+                <Switch For=@nameof(_edit.EnableLdap) Label=@_t.EnableLdap @bind-Value=_edit.EnableLdap
                     Errors=_errors />
                 <IntegerBox For=@nameof(_edit.MinPasswordLength) Label=@_t.MinPasswordLength
                     @bind-Value=_edit.MinPasswordLength Errors=_errors Required />

@@ -39,6 +39,8 @@ public interface IApps : IStandard
     string MemberOf { get; }
     string GroupAttributes { get; }
     string Member { get; }
+    string ToastAdded { get; }
+    string ToastSaved {get;}
 }
 public class Apps_en : Standard_en, IApps
 {
@@ -79,6 +81,8 @@ public class Apps_en : Standard_en, IApps
     public string MemberOf => "List of all group DN it is a member of";
     public string GroupAttributes => "Group attributes";
     public string Member => "List of all user member DN";
+    public string ToastAdded => "App has been added.";
+    public string ToastSaved => "App saved.";
 }
 public class Apps_hr : Standard_hr, IApps
 {
@@ -119,4 +123,6 @@ public class Apps_hr : Standard_hr, IApps
     public string MemberOf => "Popis svih grupnih DN-ova čiji je korisnik član";
     public string GroupAttributes => "Grupni atributi";
     public string Member => "Popis svih korisničkih DN-ova koji su članovi grupe";
+    public string ToastAdded => "App je dodana.";
+    public string ToastSaved => "App je spremljena.";
 }

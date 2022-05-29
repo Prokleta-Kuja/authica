@@ -25,6 +25,8 @@ public interface IUsers : IStandard
     string IsAdmin { get; }
     string Disabled { get; }
     string ChooseRole { get; }
+    string ToastAdded { get; }
+    string ToastSaved { get; }
 }
 public class Users_en : Standard_en, IUsers
 {
@@ -51,6 +53,8 @@ public class Users_en : Standard_en, IUsers
     public string IsAdmin => "Is Admin";
     public string Disabled => "Disabled";
     public string ChooseRole => "Choose role";
+    public string ToastAdded => "User added.";
+    public string ToastSaved => "User saved.";
 }
 public class Users_hr : Standard_hr, IUsers
 {
@@ -77,4 +81,6 @@ public class Users_hr : Standard_hr, IUsers
     public string IsAdmin => "Je administrator";
     public string Disabled => "Onemogućen";
     public string ChooseRole => "Odaberi ulogu";
+    public string ToastAdded => "Korisnik dodan.";
+    public string ToastSaved => "Korisnik spremljen.";
 }

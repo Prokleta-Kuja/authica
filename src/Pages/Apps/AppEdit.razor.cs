@@ -20,6 +20,7 @@ public partial class AppEdit : IDisposable
     [Inject] private IPasswordHasher Hasher { get; set; } = null!;
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
     [Inject] private AuthorizationStore AuthzStore { get; set; } = null!;
+    [Inject] private ToastService ToastService { get; set; } = null!;
     [Parameter] public Guid AliasId { get; set; }
     Modal LdapModal { get; set; } = null!;
     private AppDbContext _db = null!;
@@ -107,6 +108,8 @@ public partial class AppEdit : IDisposable
 
         AuthzStore.ClearAuthorizations();
 
+        ToastService.ShowSuccess(_t.ToastAdded);
+
         Nav.NavigateTo(C.Routes.AppsFor(_item.AliasId));
         _create = null;
         _edit = new(_item);
@@ -136,6 +139,8 @@ public partial class AppEdit : IDisposable
             _item.PasswordHash = Hasher.HashPassword(_edit.NewSecret);
 
         await _db.SaveChangesAsync();
+
+        ToastService.ShowSuccess(_t.ToastSaved);
 
         AuthzStore.ClearAuthorizations();
     }

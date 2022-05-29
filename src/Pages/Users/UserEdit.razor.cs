@@ -19,6 +19,7 @@ public partial class UserEdit : IDisposable
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
     [Inject] private IPasswordHasher Hasher { get; set; } = null!;
     [Inject] private AuthorizationStore AuthzStore { get; set; } = null!;
+    [Inject] private ToastService ToastService { get; set; } = null!;
     [Parameter] public Guid AliasId { get; set; }
     private AppDbContext _db = null!;
     private UserCreateModel? _create;
@@ -110,6 +111,8 @@ public partial class UserEdit : IDisposable
 
         AuthzStore.ClearAuthorizations();
 
+        ToastService.ShowSuccess(_t.ToastAdded);
+
         Nav.NavigateTo(C.Routes.UsersFor(_item.AliasId));
         _create = null;
         _edit = new(_item);
@@ -141,6 +144,7 @@ public partial class UserEdit : IDisposable
             _item.SetPassword(_edit.NewPassword, Hasher);
 
         await _db.SaveChangesAsync();
+        ToastService.ShowSuccess(_t.ToastSaved);
 
         AuthzStore.ClearAuthorizations();
     }

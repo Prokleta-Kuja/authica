@@ -20,6 +20,7 @@ public partial class MyProfile : IDisposable
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
     [Inject] private IPasswordHasher Hasher { get; set; } = null!;
     [Inject] private NavigationManager Nav { get; set; } = null!;
+    [Inject] private ToastService ToastService { get; set; } = null!;
     private AppDbContext _db = null!;
     private User? _item;
     private MyProfileEditModel? _edit;
@@ -60,6 +61,7 @@ public partial class MyProfile : IDisposable
     {
         InMemoryTicketStore.RemoveSession(sessionId.ToString());
         _tickets = InMemoryTicketStore.GetUsersTickets(Session.UserAliasId);
+        ToastService.ShowSuccess(_t.ToastSessionRemoved);
         StateHasChanged();
     }
     void CancelClicked() => Nav.NavigateTo(C.Routes.Root);
@@ -95,7 +97,7 @@ public partial class MyProfile : IDisposable
         _item.Locale = _edit.Locale;
 
         await _db.SaveChangesAsync();
-
+        ToastService.ShowSuccess(_t.ToastSaved);
         Nav.NavigateTo(C.Routes.Root);
     }
 }

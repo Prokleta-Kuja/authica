@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using authica.Auth;
 using authica.Entities;
 using authica.Models;
+using authica.Services;
 using authica.Translations;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ public partial class RoleEdit : IDisposable
     [Inject] private NavigationManager Nav { get; set; } = null!;
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
     [Inject] private AuthorizationStore AuthzStore { get; set; } = null!;
+    [Inject] private ToastService ToastService { get; set; } = null!;
     [Parameter] public Guid AliasId { get; set; }
     private AppDbContext _db = null!;
     private RoleCreateModel? _create;
@@ -114,6 +116,8 @@ public partial class RoleEdit : IDisposable
         _db.Roles.Add(_item);
         await _db.SaveChangesAsync();
 
+        ToastService.ShowSuccess(_t.ToastAdded);
+
         Nav.NavigateTo(C.Routes.RolesFor(_item.AliasId));
         _create = null;
         _edit = new(_item);
@@ -136,6 +140,7 @@ public partial class RoleEdit : IDisposable
             _item.Disabled = null;
 
         await _db.SaveChangesAsync();
+        ToastService.ShowSuccess(_t.ToastSaved);
 
         AuthzStore.ClearAuthorizations();
     }

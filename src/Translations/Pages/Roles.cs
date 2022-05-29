@@ -15,6 +15,8 @@ public interface IRoles : IStandard
     string Disabled { get; }
     string ChooseApp { get; }
     string ChooseUser { get; }
+    string ToastAdded { get; }
+    string ToastSaved { get; }
 }
 public class Roles_en : Standard_en, IRoles
 {
@@ -31,6 +33,8 @@ public class Roles_en : Standard_en, IRoles
     public string Disabled => "Disabled";
     public string ChooseApp => "Choose app";
     public string ChooseUser => "Choose user";
+    public string ToastAdded => "Role added.";
+    public string ToastSaved => "Role saved.";
 }
 public class Roles_hr : Standard_hr, IRoles
 {
@@ -47,4 +51,6 @@ public class Roles_hr : Standard_hr, IRoles
     public string Disabled => "Onemogućena";
     public string ChooseApp => "Odaberi app";
     public string ChooseUser => "Odaberi korisnika";
+    public string ToastAdded => "Uloga dodana.";
+    public string ToastSaved => "Uloga spremljena.";
 }
