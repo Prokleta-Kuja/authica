@@ -6,6 +6,7 @@ using authica.Auth;
 using authica.Entities;
 using authica.Models;
 using authica.Services;
+using authica.Shared;
 using authica.Translations;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,7 @@ public partial class MyProfile : IDisposable
     private MyProfileEditModel? _edit;
     private List<ApplicationTicket> _tickets = new();
     private Dictionary<string, string>? _errors;
+    private Modal _modal;
     private IMyProfile _t = LocalizationFactory.MyProfile();
     private Formats _f = LocalizationFactory.Formats();
     protected override async Task OnInitializedAsync()
@@ -100,4 +102,5 @@ public partial class MyProfile : IDisposable
         ToastService.ShowSuccess(_t.ToastSaved);
         Nav.NavigateTo(C.Routes.Root);
     }
+    async Task ShowOtpModal() => await _modal.ToggleOpenAsync();
 }

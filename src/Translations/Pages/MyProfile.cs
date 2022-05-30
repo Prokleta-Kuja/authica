@@ -13,6 +13,9 @@ public interface IMyProfile : IStandard
     string OldPassword { get; }
     string NewPassword { get; }
     string Sessions { get; }
+    string Mfa { get; }
+    string OtpChange { get; }
+    string OtpAdd { get; }
     string ToastSessionRemoved { get; }
     string ToastSaved { get; }
 }
@@ -29,6 +32,9 @@ public class MyProfile_en : Standard_en, IMyProfile
     public string OldPassword => "Current Password";
     public string NewPassword => "New Password";
     public string Sessions => "Sessions";
+    public string Mfa => "Multi factor";
+    public string OtpChange => "Change OTP device";
+    public string OtpAdd => "Add OTP device";
     public string ToastSessionRemoved => "Session removed.";
     public string ToastSaved => "Changes saved.";
 }
@@ -45,6 +51,9 @@ public class MyProfile_hr : Standard_hr, IMyProfile
     public string OldPassword => "Trenutna lozinka";
     public string NewPassword => "Nova lozinka";
     public string Sessions => "Sesije";
+    public string Mfa => "Više faktora";
+    public string OtpChange => "Promijeni OTP uređaj";
+    public string OtpAdd => "Dodaj OTP uređaj";
     public string ToastSessionRemoved => "Sesija poništena.";
     public string ToastSaved => "Izmjene spremljene.";
 }

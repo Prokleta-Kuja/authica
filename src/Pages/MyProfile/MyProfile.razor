@@ -31,6 +31,19 @@
                     Errors=_errors Type="password" AutoComplete="new-password" />
             </div>
         </div>
+        <div class="card">
+            <div class="card-header">@_t.Mfa</div>
+            <div class="card-bory py-0">
+                @if(_item!.CanOtp)
+                {
+                    <button type=button class="btn btn-outline-success" @onclick=ShowOtpModal>@_t.OtpChange</button>
+                }
+                else
+                {
+                    <button type=button class="btn btn-success" @onclick=ShowOtpModal>@_t.OtpAdd</button>
+                }
+            </div>
+        </div>
     </div>
     <div class="col-lg-4 col-md-7 col-sm-9 mt-2">
         <div class="card">
@@ -69,4 +82,35 @@
         <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
     </div>
 </div>
+<Modal @ref=_modal Title=OTP Scrollable>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">First</th>
+                <th scope="col">Last</th>
+                <th scope="col">Handle</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>mdo</td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>Jacob</td>
+                <td>Thornton</td>
+                <td>fat</td>
+            </tr>
+            <tr>
+                <th scope="row">3</th>
+                <td colspan="2">Larry the Bird</td>
+                <td>twitter</td>
+            </tr>
+        </tbody>
+    </table>
+</Modal>
 }
