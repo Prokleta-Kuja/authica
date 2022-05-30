@@ -71,6 +71,12 @@ public partial class AppDbContext : DbContext, IDataProtectionKeyContext
                     .Entity(entityType.Name)
                     .Property(property.Name)
                     .HasConversion<double>();
+
+            var spanProperties = entityType.ClrType.GetProperties()
+                .Where(p => p.PropertyType == typeof(TimeSpan) || p.PropertyType == typeof(TimeSpan?));
+
+            foreach (var property in spanProperties)
+                builder.Entity(entityType.Name).Property(property.Name).HasConversion<long>();
         }
     }
     public async ValueTask InitializeDefaults(IPasswordHasher hasher)

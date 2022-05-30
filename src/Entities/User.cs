@@ -49,6 +49,15 @@ public class User
     public DateTime? Disabled { get; set; }
     public DateTime? LastLogin { get; set; }
 
+    // MFA
+    public bool HasMfa => CanOtp || CanPush;
+    public bool CanOtp => OtpKey != null;
+    public byte[]? OtpKey { get; set; } // TODO: secret, must encode
+    public bool CanPush => !string.IsNullOrWhiteSpace(Endpoint) && !string.IsNullOrWhiteSpace(P256DH) && !string.IsNullOrWhiteSpace(Auth);
+    public string? Endpoint { get; set; }
+    public string? P256DH { get; set; }
+    public string? Auth { get; set; } // TODO: secret, must encode
+
     public virtual ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
 
     public User SetPassword(string newPassword, IPasswordHasher hasher)
