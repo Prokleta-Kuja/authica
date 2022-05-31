@@ -9,25 +9,30 @@ using authica.Services;
 using authica.Shared;
 using authica.Translations;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 
 namespace authica.Pages.MyProfile;
 
 public partial class MyProfile : IDisposable
 {
-    [Inject] private CurrentSession Session { get; set; } = null!;
-    [Inject] private ILogger<MyProfile> Logger { get; set; } = null!;
-    [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
-    [Inject] private IPasswordHasher Hasher { get; set; } = null!;
-    [Inject] private NavigationManager Nav { get; set; } = null!;
-    [Inject] private ToastService ToastService { get; set; } = null!;
+    [Inject] CurrentSession Session { get; set; } = null!;
+    [Inject] ILogger<MyProfile> Logger { get; set; } = null!;
+    [Inject] IDbContextFactory<AppDbContext> DbFactory { get; set; } = null!;
+    [Inject] IPasswordHasher Hasher { get; set; } = null!;
+    [Inject] IDataProtectionProvider DpProvider { get; set; } = null!;
+    [Inject] NavigationManager Nav { get; set; } = null!;
+    [Inject] IJSRuntime JS { get; set; } = null!;
+    [Inject] ToastService ToastService { get; set; } = null!;
     private AppDbContext _db = null!;
+    private Modal _otpModal = null!;
     private User? _item;
     private MyProfileEditModel? _edit;
+    private OtpModel? _otp;
     private List<ApplicationTicket> _tickets = new();
     private Dictionary<string, string>? _errors;
-    private Modal _modal;
     private IMyProfile _t = LocalizationFactory.MyProfile();
     private Formats _f = LocalizationFactory.Formats();
     protected override async Task OnInitializedAsync()
@@ -42,15 +47,6 @@ public partial class MyProfile : IDisposable
 
         _db = await DbFactory.CreateDbContextAsync();
 
-        base.OnInitialized();
-    }
-    public void Dispose() => _db?.Dispose();
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender)
-            return;
-
         _tickets = InMemoryTicketStore.GetUsersTickets(Session.UserAliasId);
 
         _item = await _db.Users.Where(u => u.AliasId == Session.UserAliasId).FirstOrDefaultAsync();
@@ -59,6 +55,7 @@ public partial class MyProfile : IDisposable
 
         StateHasChanged();
     }
+    public void Dispose() => _db?.Dispose();
     void RemoveSession(Guid sessionId)
     {
         InMemoryTicketStore.RemoveSession(sessionId.ToString());
@@ -102,5 +99,29 @@ public partial class MyProfile : IDisposable
         ToastService.ShowSuccess(_t.ToastSaved);
         Nav.NavigateTo(C.Routes.Root);
     }
-    async Task ShowOtpModal() => await _modal.ToggleOpenAsync();
+    async Task ShowOtpModal()
+    {
+        _otp = new(_item!, DpProvider);
+        await _otpModal.ToggleOpenAsync();
+    }
+    async Task AddOtpSecterToClipboard()
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", _otp?.NewToken.Secret);
+        ToastService.ShowSuccess(_t.OtpClipboardCopied);
+    }
+    async Task SaveOtpClicked()
+    {
+        if (_otp == null || _item == null)
+            return;
+
+        _errors = _otp.Validate(_t);
+        if (_errors != null)
+            return;
+
+        var protector = DpProvider.CreateProtector(nameof(User.OtpKey));
+        _item.OtpKey = protector.Protect(_otp.NewToken.Key);
+
+        await _db.SaveChangesAsync();
+        await _otpModal.ToggleOpenAsync();
+    }
 }

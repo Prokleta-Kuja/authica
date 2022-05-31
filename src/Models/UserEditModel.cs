@@ -20,6 +20,7 @@ public class UserEditModel
     public string? NewPassword { get; set; }
     public bool IsAdmin { get; set; }
     public bool Disabled { get; set; }
+    public bool ClearOtp { get; set; }
     public UserEditModel(User u)
     {
         UserId = u.UserId;

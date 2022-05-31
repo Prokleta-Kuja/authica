@@ -82,35 +82,29 @@
         <button type="button" class="btn btn-outline-danger ms-2" @onclick=CancelClicked>@_t.Cancel</button>
     </div>
 </div>
-<Modal @ref=_modal Title=OTP Scrollable>
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">Handle</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>mdo</td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>fat</td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td colspan="2">Larry the Bird</td>
-                <td>twitter</td>
-            </tr>
-        </tbody>
-    </table>
+<Modal @ref=_otpModal Title=OTP Scrollable>
+    <ChildContent>
+    @if(_otp != null)
+    {
+        <img class="rounded mx-auto d-block" src=@_otp.Qr />
+
+        <label class="form-label">@_t.OtpSecretCode</label>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" value=@_otp.ChunkedSecret readonly>
+            <button class="btn btn-outline-secondary" type="button" title=@_t.OtpClipboard @onclick=AddOtpSecterToClipboard>
+                <i class="bi bi-clipboard-fill"></i>
+            </button>
+        </div>
+        <NumBox For=@nameof(OtpModel.NewCode) Label=@_t.OtpNewCode @bind-Value=_otp.NewCode Errors=_errors />
+        if(_otp.OldKey != null)
+        {
+            <NumBox For=@nameof(OtpModel.OldCode) Label=@_t.OtpOldCode @bind-Value=_otp.OldCode Errors=_errors />
+            <div class="form-text">@_t.OtpOldHelp</div>
+        }
+    }
+    </ChildContent>
+    <Footer>
+        <button type="submit" class="btn btn-success" @onclick=SaveOtpClicked>@_t.SaveChanges</button>
+    </Footer>
 </Modal>
 }

@@ -16,6 +16,12 @@ public interface IMyProfile : IStandard
     string Mfa { get; }
     string OtpChange { get; }
     string OtpAdd { get; }
+    string OtpOldCode { get; }
+    string OtpOldHelp { get; }
+    string OtpNewCode { get; }
+    string OtpClipboard { get; }
+    string OtpClipboardCopied { get; }
+    string OtpSecretCode { get; }
     string ToastSessionRemoved { get; }
     string ToastSaved { get; }
 }
@@ -35,6 +41,12 @@ public class MyProfile_en : Standard_en, IMyProfile
     public string Mfa => "Multi factor";
     public string OtpChange => "Change OTP device";
     public string OtpAdd => "Add OTP device";
+    public string OtpOldCode => "Old code";
+    public string OtpOldHelp => "In case you don't have previous device, please ask Admin for help";
+    public string OtpNewCode => "New code";
+    public string OtpClipboard => "Copy to Clipboard";
+    public string OtpClipboardCopied => "Copied!";
+    public string OtpSecretCode => "Secret code";
     public string ToastSessionRemoved => "Session removed.";
     public string ToastSaved => "Changes saved.";
 }
@@ -54,6 +66,12 @@ public class MyProfile_hr : Standard_hr, IMyProfile
     public string Mfa => "Više faktora";
     public string OtpChange => "Promijeni OTP uređaj";
     public string OtpAdd => "Dodaj OTP uređaj";
+    public string OtpOldCode => "Stari kod";
+    public string OtpOldHelp => "Ako nemate prethodni uređaj, obratite se administratoru za pomoć";
+    public string OtpNewCode => "Novi kod";
+    public string OtpClipboard => "Kopiraj";
+    public string OtpClipboardCopied => "Kopirano!";
+    public string OtpSecretCode => "Tajni kod";
     public string ToastSessionRemoved => "Sesija poništena.";
     public string ToastSaved => "Izmjene spremljene.";
 }

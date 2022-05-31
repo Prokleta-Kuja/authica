@@ -143,6 +143,9 @@ public partial class UserEdit : IDisposable
         if (!string.IsNullOrWhiteSpace(_edit.NewPassword))
             _item.SetPassword(_edit.NewPassword, Hasher);
 
+        if (_edit.ClearOtp)
+            _item.OtpKey = null;
+
         await _db.SaveChangesAsync();
         ToastService.ShowSuccess(_t.ToastSaved);
 

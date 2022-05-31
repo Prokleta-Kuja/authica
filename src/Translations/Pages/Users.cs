@@ -24,6 +24,7 @@ public interface IUsers : IStandard
     string NewPassword { get; }
     string IsAdmin { get; }
     string Disabled { get; }
+    string ClearOtp { get; }
     string ChooseRole { get; }
     string ToastAdded { get; }
     string ToastSaved { get; }
@@ -52,6 +53,7 @@ public class Users_en : Standard_en, IUsers
     public string NewPassword => "New Password";
     public string IsAdmin => "Is Admin";
     public string Disabled => "Disabled";
+    public string ClearOtp => "Clear OTP token";
     public string ChooseRole => "Choose role";
     public string ToastAdded => "User added.";
     public string ToastSaved => "User saved.";
@@ -80,6 +82,7 @@ public class Users_hr : Standard_hr, IUsers
     public string NewPassword => "Nova lozinka";
     public string IsAdmin => "Je administrator";
     public string Disabled => "Onemogućen";
+    public string ClearOtp => "Obriši OTP token";
     public string ChooseRole => "Odaberi ulogu";
     public string ToastAdded => "Korisnik dodan.";
     public string ToastSaved => "Korisnik spremljen.";

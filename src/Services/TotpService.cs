@@ -6,7 +6,7 @@ using System.Web;
 
 namespace authica.Services;
 
-internal class AuthToken
+public class AuthToken
 {
     public AuthToken(byte[] key, string secret, string uri)
     {

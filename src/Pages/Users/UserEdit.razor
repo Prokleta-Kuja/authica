@@ -63,6 +63,7 @@ else if (_edit != null)
                                 Errors=_errors Type="password" AutoComplete="new-password" />
                             <Switch For=@nameof(UserEditModel.IsAdmin) Label=@_t.IsAdmin @bind-Value=_edit.IsAdmin Errors=_errors />
                             <Switch For=@nameof(UserEditModel.Disabled) Label=@_t.Disabled @bind-Value=_edit.Disabled Errors=_errors NoMargin />
+                            <Switch For=@nameof(UserEditModel.ClearOtp) Label=@_t.ClearOtp @bind-Value=_edit.ClearOtp Errors=_errors NoMargin />
                         </div>
                     </div>
                 </div>
