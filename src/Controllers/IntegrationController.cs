@@ -47,12 +47,11 @@ public class IntegrationController : ControllerBase
     [Route(C.Routes.VerifyCaddy)]
     public async Task<IActionResult> Caddy()
     {
-        if (!_ctx.Request.Headers.TryGetValue(C.Headers.ForwardedProto, out var proto)
-            || !_ctx.Request.Headers.TryGetValue(C.Headers.ForwardedHost, out var host)
+        if (!_ctx.Request.Headers.TryGetValue(C.Headers.OriginalHost, out var host)
             || !_ctx.Request.Headers.TryGetValue(C.Headers.ForwardedUri, out var path))
             return StatusCode(StatusCodes.Status400BadRequest, GetHeadersMessage());
 
-        var url = $"{proto}://{host}{path}";
+        var url = $"https://{host}{path}";
         var uri = new Uri(url);
 
         if (!_session.IsAuthenticated)
