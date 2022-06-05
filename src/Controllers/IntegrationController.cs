@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using authica.Auth;
@@ -49,7 +50,7 @@ public class IntegrationController : ControllerBase
         if (!_ctx.Request.Headers.TryGetValue(C.Headers.ForwardedProto, out var proto)
             || !_ctx.Request.Headers.TryGetValue(C.Headers.ForwardedHost, out var host)
             || !_ctx.Request.Headers.TryGetValue(C.Headers.ForwardedUri, out var path))
-            return StatusCode(StatusCodes.Status400BadRequest);
+            return StatusCode(StatusCodes.Status400BadRequest, GetHeadersMessage());
 
         var url = $"{proto}://{host}{path}";
         var uri = new Uri(url);
@@ -75,5 +76,10 @@ public class IntegrationController : ControllerBase
         // _ctx.Response.Headers.Add(C.Headers.RemoteGroups, "");
 
         return StatusCode(StatusCodes.Status200OK);
+    }
+    string GetHeadersMessage()
+    {
+        var headers = _ctx.Request.Headers.Select(h => $"{h.Key}: {h.Value}");
+        return $"Expected headers not found.\n Headears received: \n{string.Join('\n', headers)}";
     }
 }
