@@ -80,6 +80,6 @@ public class IntegrationController : ControllerBase
     string GetHeadersMessage()
     {
         var headers = _ctx.Request.Headers.Select(h => $"{h.Key}: {h.Value}");
-        return $"Expected headers not found.\n Headears received: \n{string.Join('\n', headers)}";
+        return $"Expected headers not found.\n\nHeadears received: \n{string.Join('\n', headers)}";
     }
 }
