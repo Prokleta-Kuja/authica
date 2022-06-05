@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace authica.Pages.Auth;
 
-[IgnoreAntiforgeryToken]
 public class VerifyModel : PageModel
 {
     public IVerify T = LocalizationFactory.Verify();

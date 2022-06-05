@@ -16,7 +16,6 @@ using Microsoft.EntityFrameworkCore;
 namespace authica.Pages.Auth;
 
 [AllowAnonymous]
-[IgnoreAntiforgeryToken]
 public class SignInModel : PageModel
 {
     readonly AppDbContext _db;

@@ -89,7 +89,10 @@ public partial class Configuration : IDisposable
         if (shouldRestart)
             ToastService.ShowWarning(_t.ToastRestartMessage, _t.ToastRestartAction, Restart);
         else
+        {
             await C.Configuration.LoadFromDiskAsync();
+            ToastService.ShowSuccess(_t.ToastSaved);
+        }
     }
 
     void Restart()

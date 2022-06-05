@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace authica.Pages.Auth;
 
 [AllowAnonymous]
-[IgnoreAntiforgeryToken]
 public class SignOutModel : PageModel
 {
     public ISignOut T = LocalizationFactory.SignOut();

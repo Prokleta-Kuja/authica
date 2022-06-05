@@ -37,6 +37,8 @@ jobs:
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
+          build-args: |
+            Version=${{ github.event.inputs.version }}
           tags: |
             ghcr.io/prokleta-kuja/authica:latest
             ghcr.io/prokleta-kuja/authica:${{ github.event.inputs.version }}

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using authica.Auth;
 using authica.Entities;
+using authica.Extensions;
 using authica.Models;
 using authica.Services;
 using authica.Shared;
@@ -106,7 +107,7 @@ public partial class MyProfile : IDisposable
     }
     async Task AddOtpSecterToClipboard()
     {
-        await JS.InvokeVoidAsync("navigator.clipboard.writeText", _otp?.NewToken.Secret);
+        await JS.CopyToClipboard(_otp?.NewToken.Secret);
         ToastService.ShowSuccess(_t.OtpClipboardCopied);
     }
     async Task SaveOtpClicked()

@@ -54,6 +54,7 @@ public class LdapService : BackgroundService
                 var task = Task.Factory.StartNew(() => HandleClient(client), TaskCreationOptions.LongRunning);
             }
             catch (ObjectDisposedException) { } // Thrown when server is stopped while still receiving. This can be safely ignored
+            catch (OperationCanceledException) { }
             catch (Exception)
             {
                 // TODO: log
@@ -69,6 +70,7 @@ public class LdapService : BackgroundService
                 s_clients.Remove(client);
         }
 
+        s_server?.Stop();
         return base.StopAsync(cancellationToken);
     }
 

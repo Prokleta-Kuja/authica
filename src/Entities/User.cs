@@ -52,7 +52,7 @@ public class User
     // MFA
     public bool HasMfa => CanOtp || CanPush;
     public bool CanOtp => OtpKey != null;
-    public byte[]? OtpKey { get; set; } // TODO: secret, must encode
+    public byte[]? OtpKey { get; set; }
     public bool CanPush => !string.IsNullOrWhiteSpace(Endpoint) && !string.IsNullOrWhiteSpace(P256DH) && !string.IsNullOrWhiteSpace(Auth);
     public string? Endpoint { get; set; }
     public string? P256DH { get; set; }

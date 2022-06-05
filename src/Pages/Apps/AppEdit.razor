@@ -3,6 +3,7 @@
 
 @if (_create != null)
 {
+    <PageTitle>@_t.AddTitle - @C.Configuration.Current.Issuer</PageTitle>
     <div class="row justify-content-center">
         <div class="col-lg-4 col-sm-6 mt-2">
             <form class="card" @onsubmit=SaveCreateClicked>
@@ -28,6 +29,7 @@
 }
 else if (_edit != null && _item != null)
 {
+    <PageTitle>@_t.EditTitle - @C.Configuration.Current.Issuer</PageTitle>
     <form @onsubmit=SaveEditClicked class="row justify-content-center">
     <div class="col-lg-4 col-sm-6 mt-2">
         <div class="card">

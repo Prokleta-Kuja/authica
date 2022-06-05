@@ -16,7 +16,6 @@ using Microsoft.Extensions.Caching.Memory;
 namespace authica.Pages.Auth;
 
 [AllowAnonymous]
-[IgnoreAntiforgeryToken]
 public class ResetPasswordModel : PageModel
 {
     readonly AppDbContext _db;
@@ -107,6 +106,6 @@ public class ResetPasswordModel : PageModel
         var props = CookieAuth.CreateAuthProps();
 
         await HttpContext.SignInAsync(CookieAuth.Scheme, principal, props);
-        return Redirect(C.Routes.Root); // TODO: redirect to user info page
+        return Redirect(C.Routes.MyProfile);
     }
 }

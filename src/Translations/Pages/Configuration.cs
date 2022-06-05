@@ -2,6 +2,7 @@ namespace authica.Translations;
 
 public interface IConfiguration : IStandard
 {
+    string PageTitle { get; }
     string DetailsSection { get; }
     string GeoSection { get; }
     string SmtpSection { get; }
@@ -47,9 +48,11 @@ public interface IConfiguration : IStandard
     string ToastNoLicenseKey { get; }
     string ToastDownloadOk { get; }
     string ToastDownloadNok { get; }
+    string ToastSaved { get; }
 }
 public class Configuration_en : Standard_en, IConfiguration
 {
+    public string PageTitle => "Configuration";
     public string DetailsSection => "Details";
     public string GeoSection => "Geo blocking";
     public string SmtpSection => "SMTP";
@@ -95,9 +98,11 @@ public class Configuration_en : Standard_en, IConfiguration
     public string ToastNoLicenseKey => "No license key entered.";
     public string ToastDownloadOk => "Geolocation database downloaded.";
     public string ToastDownloadNok => "Could not download geolocation database.";
+    public string ToastSaved => "Configuration saved.";
 }
 public class Configuration_hr : Standard_hr, IConfiguration
 {
+    public string PageTitle => "Konfiguracija";
     public string DetailsSection => "Detalji";
     public string GeoSection => "Geo blokiranje";
     public string SmtpSection => "SMTP";
@@ -143,4 +148,5 @@ public class Configuration_hr : Standard_hr, IConfiguration
     public string ToastNoLicenseKey => "Licenčni ključ nije unesen.";
     public string ToastDownloadOk => "Geolokacijska baza preuzeta.";
     public string ToastDownloadNok => "Geolokacijska baza nije preuzeta.";
+    public string ToastSaved => "Konfiguracija spremljena.";
 }
