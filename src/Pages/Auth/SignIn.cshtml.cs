@@ -22,15 +22,17 @@ public class SignInModel : PageModel
     readonly AppDbContext _db;
     readonly IPasswordHasher _hasher;
     readonly IpSecurity _ipsec;
+    public AuthorizationStore AuthzStore;
     public readonly ISignIn T = LocalizationFactory.SignIn();
-    public SignInModel(AppDbContext db, IPasswordHasher hasher, IpSecurity ipsec)
+    public SignInModel(AppDbContext db, IPasswordHasher hasher, IpSecurity ipsec, AuthorizationStore authzStore)
     {
         _db = db;
         _hasher = hasher;
         _ipsec = ipsec;
+        AuthzStore = authzStore;
     }
     public IActionResult OnGet() => Page();
-    [FromQuery] public string? ReturnUrl { get; set; }
+    [FromQuery] public string? Rd { get; set; }
     [FromForm] public string? Username { get; set; }
     [FromForm] public string? Password { get; set; }
     public Dictionary<string, string> Errors = new();
@@ -61,8 +63,6 @@ public class SignInModel : PageModel
             return Page();
         }
 
-        var redirectUri = string.IsNullOrWhiteSpace(ReturnUrl) ? C.Routes.Root : ReturnUrl;
-        // TODO: Validate app and change redirectUri
 
         var authenticated = user.VerifyPassword(password, _hasher);
         if (authenticated)
@@ -74,6 +74,11 @@ public class SignInModel : PageModel
             var props = CookieAuth.CreateAuthProps();
 
             await HttpContext.SignInAsync(CookieAuth.Scheme, principal, props);
+
+            var redirectUri = C.Routes.Root;
+            if (!string.IsNullOrWhiteSpace(Rd) && await AuthzStore.HasApp(new Uri(Rd)))
+                redirectUri = Rd;
+
             return Redirect(redirectUri);
         }
         else

@@ -38,11 +38,21 @@ public static class C
         public const string Configuration = "/configuration";
         public const string Shutdown = "/shutdown";
         public const string Restart = "/shutdown/restart";
+        public const string VerifyCaddy = "/caddy-verify";
         public const string VerifyNginx = "/nginx-verify";
     }
     public static class Headers
     {
         public const string OriginalUrl = "X-Original-URL";
+        public const string ForwardedFor = "X-Forwarded-For";
+        public const string ForwardedHost = "X-Forwarded-Host";
+        public const string ForwardedMethod = "X-Forwarded-Method";
+        public const string ForwardedProto = "X-Forwarded-Proto";
+        public const string ForwardedUri = "X-Forwarded-Uri";
+        public const string RemoteUser = "Remote-User";
+        public const string RemoteGroups = "Remote-Groups";
+        public const string RemoteName = "Remote-Name";
+        public const string RemoteEmail = "Remote-Email";
     }
     public static class Paths
     {

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Web;
 using authica.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -37,6 +38,41 @@ public class IntegrationController : ControllerBase
 
         if (!authorized)
             return StatusCode(StatusCodes.Status403Forbidden);
+
+        return StatusCode(StatusCodes.Status200OK);
+    }
+
+    [AllowAnonymous]
+    [Route(C.Routes.VerifyCaddy)]
+    public async Task<IActionResult> Caddy()
+    {
+        if (!_ctx.Request.Headers.TryGetValue(C.Headers.ForwardedProto, out var proto)
+            || !_ctx.Request.Headers.TryGetValue(C.Headers.ForwardedHost, out var host)
+            || !_ctx.Request.Headers.TryGetValue(C.Headers.ForwardedUri, out var path))
+            return StatusCode(StatusCodes.Status400BadRequest);
+
+        var url = $"{proto}://{host}{path}";
+        var uri = new Uri(url);
+
+        if (!_session.IsAuthenticated)
+            return Redirect($"{C.Configuration.Current.HostName.TrimEnd('/')}{C.Routes.SignIn}?{nameof(Pages.Auth.SignInModel.Rd)}={HttpUtility.UrlEncode(url)}");
+
+        var authorized = await _authzStore.IsAuthorizedAsync(uri, _session.UserAliasId);
+        if (!authorized)
+            return StatusCode(StatusCodes.Status403Forbidden);
+
+        if (_session.IdentityClaims.TryGetValue(Claims.UserName, out var username))
+            _ctx.Response.Headers.Add(C.Headers.RemoteUser, username);
+
+        if (_session.IdentityClaims.TryGetValue(Claims.Email, out var email))
+            _ctx.Response.Headers.Add(C.Headers.RemoteEmail, email);
+
+        if (_session.IdentityClaims.TryGetValue(Claims.DisplayName, out var displayName))
+            _ctx.Response.Headers.Add(C.Headers.RemoteName, displayName);
+
+        // TODO: Fill groups
+        //     if(_session.IdentityClaims.TryGetValue(Claims))
+        // _ctx.Response.Headers.Add(C.Headers.RemoteGroups, "");
 
         return StatusCode(StatusCodes.Status200OK);
     }
