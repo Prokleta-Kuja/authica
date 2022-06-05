@@ -127,7 +127,7 @@ public class LdapService : BackgroundService
                     {
                         var normalizedApp = C.Normalize(bind.App);
                         var app = await db.Apps
-                            .Where(a => !a.Disabled.HasValue)
+                            .Where(a => !a.Disabled.HasValue && a.LdapEnabled)
                             .SingleOrDefaultAsync(u => u.NameNormalized == normalizedApp);
 
                         if (app != null)
@@ -165,8 +165,8 @@ public class LdapService : BackgroundService
                             invalidWriter.WriteInteger(messageId);
                             using var kita = invalidWriter.PushSequence(C.Ldap.Tags.BindResponse);
                             invalidWriter.WriteEnumeratedValue(C.Ldap.ResultCode.InvalidCredentials); // Result code
-                            invalidWriter.WriteOctetString(System.Text.Encoding.UTF8.GetBytes("")); // Matched DN
-                            invalidWriter.WriteOctetString(System.Text.Encoding.UTF8.GetBytes("")); // Diagnostic message
+                            invalidWriter.WriteOctetString(Encoding.UTF8.GetBytes("")); // Matched DN
+                            invalidWriter.WriteOctetString(Encoding.UTF8.GetBytes("")); // Diagnostic message
                         }
                         var invalidData = invalidWriter.Encode();
                         await stream.WriteAsync(invalidData);
@@ -183,8 +183,8 @@ public class LdapService : BackgroundService
                         successWriter.WriteInteger(messageId);
                         using var kita = successWriter.PushSequence(C.Ldap.Tags.BindResponse);
                         successWriter.WriteEnumeratedValue(C.Ldap.ResultCode.Success); // Result code
-                        successWriter.WriteOctetString(System.Text.Encoding.UTF8.GetBytes("")); // Matched DN
-                        successWriter.WriteOctetString(System.Text.Encoding.UTF8.GetBytes("")); // Diagnostic message
+                        successWriter.WriteOctetString(Encoding.UTF8.GetBytes("")); // Matched DN
+                        successWriter.WriteOctetString(Encoding.UTF8.GetBytes("")); // Diagnostic message
                     }
                     var successData = successWriter.Encode();
                     await stream.WriteAsync(successData);
@@ -240,8 +240,8 @@ public class LdapService : BackgroundService
                         doneWriter.WriteInteger(messageId);
                         using var kita = doneWriter.PushSequence(C.Ldap.Tags.SearchDone);
                         doneWriter.WriteEnumeratedValue(resultCode); // Result code
-                        doneWriter.WriteOctetString(System.Text.Encoding.UTF8.GetBytes("")); // Matched DN
-                        doneWriter.WriteOctetString(System.Text.Encoding.UTF8.GetBytes("")); // Diagnostic message
+                        doneWriter.WriteOctetString(Encoding.UTF8.GetBytes("")); // Matched DN
+                        doneWriter.WriteOctetString(Encoding.UTF8.GetBytes("")); // Diagnostic message
                     }
                     var doneData = doneWriter.Encode();
                     await stream.WriteAsync(doneData);

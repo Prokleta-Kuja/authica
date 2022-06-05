@@ -31,7 +31,7 @@ public class Startup
 
         services.Configure<ForwardedHeadersOptions>(options =>
         {
-            options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedFor;
             // Only loopback proxies are allowed by default.
             // Clear that restriction because forwarders are enabled by explicit configuration.
             options.KnownNetworks.Clear();
