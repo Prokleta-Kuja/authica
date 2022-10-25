@@ -51,7 +51,10 @@ public class SignInModel : PageModel
         var username = Username!.ToLower().Trim();
         var password = Password!.Trim();
 
-        var user = await _db.Users.SingleOrDefaultAsync(u => u.UserName == username || u.Email == username);
+        var user = await _db.Users
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .SingleOrDefaultAsync(u => u.UserName == username || u.Email == username);
 
         if (user == null || user.Disabled.HasValue)
         {
@@ -74,10 +77,7 @@ public class SignInModel : PageModel
 
             await HttpContext.SignInAsync(CookieAuth.Scheme, principal, props);
 
-            var redirectUri = C.Routes.Root;
-            if (!string.IsNullOrWhiteSpace(Rd) && await AuthzStore.HasApp(new Uri(Rd)))
-                redirectUri = Rd;
-
+            var redirectUri = string.IsNullOrWhiteSpace(Rd) ? C.Routes.Root : C.Routes.AuthorizeFor(Rd);
             return Redirect(redirectUri);
         }
         else

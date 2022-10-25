@@ -15,6 +15,7 @@
             else if (!Model.HasApp)
             {
                 <h2>@Model.T.UnknownApp</h2>
+                <a href=@Model.Rd class="card-link">@Model.Rd</a>
             }
             else if (!Model.Authorized)
             {

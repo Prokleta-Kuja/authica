@@ -22,7 +22,9 @@ public class CurrentSession
 
         if (IsAuthenticated && accessor.HttpContext!.User.Identity is ClaimsIdentity identity)
         {
-            IdentityClaims = identity.Claims.ToDictionary(k => k.Type, v => v.Value);
+            foreach (var claim in identity.Claims)
+                if (!IdentityClaims.TryAdd(claim.Type, claim.Value))
+                    IdentityClaims[claim.Type] = $"{IdentityClaims[claim.Type]}|{claim.Value}";
 
             if (TryGetClaimValue(Claims.SessionId, out var session) && Guid.TryParse(session, out var sessionId))
                 SessionId = sessionId;

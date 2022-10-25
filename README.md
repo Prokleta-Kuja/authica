@@ -97,3 +97,17 @@ auth_request_set $target_url $scheme://$http_host$request_uri;
 error_page 401 403 404 =302 https://auth-test.ica.hr/authorize?rd=$target_url;
 ```
 </details>
+
+<details>
+  <summary>nginx</summary>
+  ```
+(AUTH) {
+	forward_auth 192.168.123.1:5000 {
+		uri /caddy-verify
+		copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+	}
+}
+
+# use import AUTH as first directive for a site you wish to protect
+  ```
+</details>

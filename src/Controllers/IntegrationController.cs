@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using authica.Auth;
@@ -59,7 +60,7 @@ public class IntegrationController : ControllerBase
 
         var authorized = await _authzStore.IsAuthorizedAsync(uri, _session.UserAliasId);
         if (!authorized)
-            return StatusCode(StatusCodes.Status403Forbidden);
+            return StatusCode(StatusCodes.Status403Forbidden, "Unauthorized");
 
         if (_session.IdentityClaims.TryGetValue(Claims.UserName, out var username))
             _ctx.Response.Headers.Add(C.Headers.RemoteUser, username);
@@ -70,9 +71,8 @@ public class IntegrationController : ControllerBase
         if (_session.IdentityClaims.TryGetValue(Claims.DisplayName, out var displayName))
             _ctx.Response.Headers.Add(C.Headers.RemoteName, displayName);
 
-        // TODO: Fill groups
-        //     if(_session.IdentityClaims.TryGetValue(Claims))
-        // _ctx.Response.Headers.Add(C.Headers.RemoteGroups, "");
+        if (_session.IdentityClaims.TryGetValue(ClaimTypes.Role, out var roles))
+            _ctx.Response.Headers.Add(C.Headers.RemoteGroups, roles);
 
         return StatusCode(StatusCodes.Status200OK);
     }

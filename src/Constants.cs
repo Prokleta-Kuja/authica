@@ -25,6 +25,7 @@ public static class C
         public const string SignOut = "/sign-out";
         public const string ResetPassword = "/reset-password";
         public const string Forbidden = "/forbidden";
+        public static string AuthorizeFor(string url) => $"/authorize?rd={url}";
         public const string MyProfile = "/my-profile";
         public const string Apps = "/apps";
         public const string App = "/apps/{AliasId:guid}";
